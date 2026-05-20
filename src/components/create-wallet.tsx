@@ -12,8 +12,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, Copy, Check, Eye, EyeOff, Loader2 } from "lucide-react";
-import type { WalletData } from "@/lib/tcx";
+import {
+  Wallet,
+  Copy,
+  Check,
+  Eye,
+  EyeOff,
+  Loader2,
+  TreePine,
+} from "lucide-react";
+import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 interface Props {
   onWalletCreated: (wallet: WalletData) => void;
@@ -25,8 +33,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showMnemonic, setShowMnemonic] = useState(false);
-  const [copiedAddress, setCopiedAddress] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
+  const [copiedAll, setCopiedAll] = useState(false);
+  const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
 
   const handleCreate = async () => {
     if (!password || password.length < 6) {
@@ -36,10 +46,17 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     setLoading(true);
     setError("");
     try {
-      const { createWallet, deriveAddress } = await import("@/lib/tcx");
-      const { keystore, mnemonic } = await createWallet(password);
-      const address = await deriveAddress(keystore);
-      onWalletCreated({ keystore, address, mnemonic, password });
+      const { createWallet, deriveAddress, getMnemonic, deriveMultiChainAddresses } =
+        await import("@/lib/tcx");
+      const { keystoreJson } = await createWallet(password);
+      const address = await deriveAddress(keystoreJson, password);
+      const mnemonic = await getMnemonic(keystoreJson, password);
+
+      // Derive multi-chain addresses
+      const addresses = await deriveMultiChainAddresses(keystoreJson, password);
+      setChainAddresses(addresses);
+
+      onWalletCreated({ keystoreJson, address, mnemonic, password });
     } catch (e: any) {
       setError(e.message || "Failed to create wallet");
     } finally {
@@ -47,12 +64,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     }
   };
 
-  const copyAddress = () => {
-    if (wallet) {
-      navigator.clipboard.writeText(wallet.address);
-      setCopiedAddress(true);
-      setTimeout(() => setCopiedAddress(false), 1500);
-    }
+  const copyAddress = (addr: string) => {
+    navigator.clipboard.writeText(addr);
+    setCopiedAddress(addr);
+    setTimeout(() => setCopiedAddress(null), 1500);
   };
 
   const copyMnemonic = () => {
@@ -61,6 +76,15 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
       setCopiedMnemonic(true);
       setTimeout(() => setCopiedMnemonic(false), 1500);
     }
+  };
+
+  const copyAllAddresses = () => {
+    const text = chainAddresses
+      .map((a) => `${a.label}: ${a.address}`)
+      .join("\n");
+    navigator.clipboard.writeText(text);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 1500);
   };
 
   const mnemonicWords = wallet?.mnemonic.split(" ") || [];
@@ -73,7 +97,7 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
           Create Wallet
         </CardTitle>
         <CardDescription>
-          Create a new ETH wallet using Token Core
+          Create a new multi-chain wallet using Token Core
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -107,31 +131,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
             </Button>
           </>
         ) : (
-          <div className="space-y-4 animate-fade-in-up">
+          <div className="space-y-5 animate-fade-in-up">
             <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-green-700 text-sm font-medium">
-              ✅ Wallet created successfully!
-            </div>
-
-            {/* Address */}
-            <div className="space-y-1.5">
-              <Label>Address</Label>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 rounded-md bg-muted px-3 py-2 text-sm font-mono break-all">
-                  {wallet.address}
-                </code>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={copyAddress}
-                  className="shrink-0"
-                >
-                  {copiedAddress ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+              ✅ Wallet created — addresses derived across{" "}
+              {chainAddresses.length} chains
             </div>
 
             {/* Mnemonic */}
@@ -194,6 +197,78 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                 </div>
               )}
             </div>
+
+            {/* Multi-Chain Address Tree */}
+            {chainAddresses.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <TreePine className="h-4 w-4 text-primary" />
+                  <Label className="text-sm font-medium">
+                    Multi-Chain Address Tree
+                  </Label>
+                </div>
+                <div className="rounded-md border border-border bg-card overflow-hidden">
+                  {chainAddresses.map((item, index) => {
+                    const isLast = index === chainAddresses.length - 1;
+                    return (
+                      <div
+                        key={item.label}
+                        className="animate-fade-in-up border-b border-border last:border-b-0 px-4 py-3"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-muted-foreground font-mono text-xs select-none">
+                            {isLast ? "└──" : "├──"}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className="text-xs font-medium"
+                          >
+                            {item.label}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2 ml-8">
+                          <code className="flex-1 text-xs font-mono break-all text-foreground/80">
+                            {item.address}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyAddress(item.address)}
+                            className="h-7 px-2 shrink-0"
+                          >
+                            {copiedAddress === item.address ? (
+                              <Check className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Copy All */}
+                <Button
+                  variant="outline"
+                  onClick={copyAllAddresses}
+                  className="w-full"
+                >
+                  {copiedAll ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-600" />
+                      Copied All Addresses!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy All Addresses
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

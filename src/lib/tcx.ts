@@ -5,14 +5,8 @@ import init, {
   export_mnemonic,
 } from "@consenlabs/tcx-wasm";
 
-export interface Keystore {
-  crypto: Record<string, unknown>;
-  id: string;
-  version: number;
-}
-
 export interface WalletData {
-  keystore: Keystore;
+  keystoreJson: string;
   address: string;
   mnemonic: string;
   password: string;
@@ -22,53 +16,159 @@ let initialized = false;
 
 async function ensureInit() {
   if (!initialized) {
-    await init();
+    await init("/tcx_wasm_bg.wasm");
     initialized = true;
   }
 }
 
-export async function createWallet(password: string, strength: 128 | 256 = 128) {
+export async function createWallet(password: string) {
   await ensureInit();
-  const result = JSON.parse(
-    create_keystore(JSON.stringify({ password, strength }))
+  // Password mode: create native HD keystore with random mnemonic
+  const keystoreJson = create_keystore(
+    JSON.stringify({ password })
   );
-  if (result.error) throw new Error(result.error);
-  return {
-    keystore: result.keystore as Keystore,
-    mnemonic: result.mnemonic as string,
-  };
+  return { keystoreJson };
 }
 
-export async function deriveAddress(keystore: Keystore): Promise<string> {
+export async function deriveAddress(
+  keystoreJson: string,
+  password: string
+): Promise<string> {
   await ensureInit();
-  const accounts = JSON.parse(
-    derive_accounts(JSON.stringify({ keystore, chain: "ETH", index: 0 }))
+  const resultStr = derive_accounts(
+    JSON.stringify({
+      keystoreJson,
+      key: password,
+      derivations: [
+        {
+          chain: "ETHEREUM",
+          derivationPath: "m/44'/60'/0'/0/0",
+          network: "MAINNET",
+        },
+      ],
+    })
   );
-  if (accounts.error) throw new Error(accounts.error);
+  const accounts = JSON.parse(resultStr);
   return accounts[0].address as string;
 }
 
 export async function signMessage(
-  keystore: Keystore,
+  keystoreJson: string,
   password: string,
-  address: string,
   message: string
 ): Promise<string> {
   await ensureInit();
-  const result = JSON.parse(
-    tcx_sign_message(
-      JSON.stringify({ keystore, password, chain: "ETH", address, message })
-    )
+  const resultStr = tcx_sign_message(
+    JSON.stringify({
+      keystoreJson,
+      key: password,
+      chain: "ETHEREUM",
+      derivationPath: "m/44'/60'/0'/0/0",
+      input: {
+        message,
+        signatureType: "PersonalSign",
+      },
+    })
   );
-  if (result.error) throw new Error(result.error);
+  const result = JSON.parse(resultStr);
   return result.signature as string;
 }
 
-export async function getMnemonic(keystore: Keystore, password: string): Promise<string> {
+export async function getMnemonic(
+  keystoreJson: string,
+  password: string
+): Promise<string> {
   await ensureInit();
-  const result = JSON.parse(
-    export_mnemonic(JSON.stringify({ keystore, password }))
+  const resultStr = export_mnemonic(
+    JSON.stringify({
+      keystoreJson,
+      key: password,
+    })
   );
-  if (result.error) throw new Error(result.error);
+  const result = JSON.parse(resultStr);
   return result.mnemonic as string;
+}
+
+export interface ChainAddress {
+  chain: string;
+  label: string;
+  address: string;
+}
+
+export async function deriveMultiChainAddresses(
+  keystoreJson: string,
+  password: string
+): Promise<ChainAddress[]> {
+  await ensureInit();
+
+  const derivationConfigs = [
+    {
+      chain: "ETHEREUM",
+      label: "ETH",
+      derivationPath: "m/44'/60'/0'/0/0",
+      network: "MAINNET",
+    },
+    {
+      chain: "BITCOIN",
+      label: "BTC Legacy (P2PKH)",
+      derivationPath: "m/44'/0'/0'/0/0",
+      network: "MAINNET",
+      segWit: "NONE",
+    },
+    {
+      chain: "BITCOIN",
+      label: "BTC SegWit (P2WPKH)",
+      derivationPath: "m/84'/0'/0'/0/0",
+      network: "MAINNET",
+      segWit: "VERSION_0",
+    },
+    {
+      chain: "BITCOIN",
+      label: "BTC Taproot (P2TR)",
+      derivationPath: "m/86'/0'/0'/0/0",
+      network: "MAINNET",
+      segWit: "VERSION_1",
+    },
+    {
+      chain: "TRON",
+      label: "TRON",
+      derivationPath: "m/44'/195'/0'/0/0",
+      network: "MAINNET",
+    },
+  ];
+
+  const results: ChainAddress[] = [];
+
+  for (const config of derivationConfigs) {
+    try {
+      const derivation: Record<string, string> = {
+        chain: config.chain,
+        derivationPath: config.derivationPath,
+        network: config.network,
+      };
+      if (config.segWit) {
+        derivation.segWit = config.segWit;
+      }
+
+      const resultStr = derive_accounts(
+        JSON.stringify({
+          keystoreJson,
+          key: password,
+          derivations: [derivation],
+        })
+      );
+      const accounts = JSON.parse(resultStr);
+      if (accounts[0]?.address) {
+        results.push({
+          chain: config.chain,
+          label: config.label,
+          address: accounts[0].address,
+        });
+      }
+    } catch {
+      // Skip chains that fail silently
+    }
+  }
+
+  return results;
 }

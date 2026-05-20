@@ -4,6 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --rk-accent: #468BFF;
+  --rk-accent-color: #ffffff;
   --background: #f8fafc;
   --foreground: #0f172a;
   --card: #ffffff;

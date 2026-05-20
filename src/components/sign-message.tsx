@@ -32,9 +32,8 @@ export function SignMessage({ wallet }: Props) {
     try {
       const { signMessage } = await import("@/lib/tcx");
       const sig = await signMessage(
-        wallet.keystore,
+        wallet.keystoreJson,
         wallet.password,
-        wallet.address,
         message
       );
       setSignature(sig);
