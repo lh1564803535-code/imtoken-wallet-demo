@@ -4,30 +4,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --rk-accent: #468BFF;
+  /* Token UI 品牌色 */
+  --rk-accent: #007fff;
   --rk-accent-color: #ffffff;
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --primary: #468BFF;
+  --background: #ffffff;
+  --foreground: #111d4a;
+  --card: #f8f9fa;
+  --card-foreground: #111d4a;
+  --primary: #007fff;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #468BFF;
+  --secondary: #f0f2f5;
+  --secondary-foreground: #111d4a;
+  --muted: #f0f2f5;
+  --muted-foreground: #99a1af;
+  --accent: #007fff;
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #468BFF;
+  --border: #e0e3e8;
+  --input: #e0e3e8;
+  --ring: #007fff;
   --radius: 0.75rem;
 }
 
 @theme inline {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -51,17 +52,66 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* === 动画 === */
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .animate-fade-in-up {
   animation: fade-in-up 0.4s ease-out forwards;
+}
+
+@keyframes slow-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-slow-spin {
+  animation: slow-spin 60s linear infinite;
+}
+
+@keyframes identity-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.identity-gradient {
+  background: linear-gradient(135deg, #007fff, #0038ad, #0d9488, #007fff);
+  background-size: 300% 300%;
+  animation: identity-gradient 3.6s ease infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 127, 255, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(0, 127, 255, 0.6); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes address-reveal {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-address-reveal {
+  animation: address-reveal 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
 }

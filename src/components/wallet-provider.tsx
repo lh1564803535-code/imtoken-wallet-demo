@@ -14,8 +14,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={lightTheme({
-            accentColor: "#468BFF",
+            accentColor: "#007fff",
             accentColorForeground: "white",
+            borderRadius: "medium",
+            fontStack: "system",
           })}
         >
           {children}

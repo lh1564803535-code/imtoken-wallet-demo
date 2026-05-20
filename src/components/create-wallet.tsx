@@ -1,27 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Wallet,
-  Copy,
-  Check,
-  Eye,
-  EyeOff,
-  Loader2,
-  TreePine,
-} from "lucide-react";
+import { Wallet, Copy, Check, Eye, EyeOff, Loader2 } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
+
+const chainStyles: Record<string, { border: string; bg: string; icon: string }> = {
+  ETHEREUM: { border: "border-l-[#007fff]", bg: "bg-blue-50/50", icon: "⟠" },
+  BITCOIN: { border: "border-l-orange-500", bg: "bg-orange-50/50", icon: "₿" },
+  TRON: { border: "border-l-red-500", bg: "bg-red-50/50", icon: "◎" },
+};
 
 interface Props {
   onWalletCreated: (wallet: WalletData) => void;
@@ -33,9 +23,9 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showMnemonic, setShowMnemonic] = useState(false);
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
-  const [copiedAll, setCopiedAll] = useState(false);
+  const [allCopied, setAllCopied] = useState(false);
   const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
 
   const handleCreate = async () => {
@@ -51,11 +41,8 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
       const { keystoreJson } = await createWallet(password);
       const address = await deriveAddress(keystoreJson, password);
       const mnemonic = await getMnemonic(keystoreJson, password);
-
-      // Derive multi-chain addresses
       const addresses = await deriveMultiChainAddresses(keystoreJson, password);
       setChainAddresses(addresses);
-
       onWalletCreated({ keystoreJson, address, mnemonic, password });
     } catch (e: any) {
       setError(e.message || "Failed to create wallet");
@@ -64,10 +51,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     }
   };
 
-  const copyAddress = (addr: string) => {
+  const copyAddress = (addr: string, index: number) => {
     navigator.clipboard.writeText(addr);
-    setCopiedAddress(addr);
-    setTimeout(() => setCopiedAddress(null), 1500);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   const copyMnemonic = () => {
@@ -78,200 +65,178 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     }
   };
 
-  const copyAllAddresses = () => {
+  const copyAll = () => {
     const text = chainAddresses
       .map((a) => `${a.label}: ${a.address}`)
       .join("\n");
     navigator.clipboard.writeText(text);
-    setCopiedAll(true);
-    setTimeout(() => setCopiedAll(false), 1500);
+    setAllCopied(true);
+    setTimeout(() => setAllCopied(false), 1500);
   };
 
-  const mnemonicWords = wallet?.mnemonic.split(" ") || [];
-
   return (
-    <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wallet className="h-5 w-5 text-primary" />
-          Create Wallet
-        </CardTitle>
-        <CardDescription>
-          Create a new multi-chain wallet using Token Core
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {!wallet ? (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter password (min 6 chars)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button
-              onClick={handleCreate}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Creating wallet...
-                </>
-              ) : (
-                "Create Wallet"
-              )}
-            </Button>
-          </>
-        ) : (
-          <div className="space-y-5 animate-fade-in-up">
-            <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-green-700 text-sm font-medium">
-              ✅ Wallet created — addresses derived across{" "}
-              {chainAddresses.length} chains
-            </div>
+    <div className="rounded-xl ring-1 ring-[#111d4a]/10 bg-white p-6" style={{ boxShadow: "0 2px 8px 0 color-mix(in srgb, #111d4a 4%, transparent)" }}>
+      <div className="flex items-center gap-2 mb-1">
+        <Wallet className="h-5 w-5 text-[#007fff]" />
+        <h3 className="text-base font-semibold text-[#111d4a]">Create Wallet</h3>
+      </div>
+      <p className="text-sm text-[#99a1af] mb-5">
+        Create a new multi-chain wallet using Token Core
+      </p>
 
-            {/* Mnemonic */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label>Mnemonic Phrase</Label>
-                <div className="flex items-center gap-1">
-                  {showMnemonic && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={copyMnemonic}
-                      className="h-7 px-2 text-xs"
-                    >
-                      {copiedMnemonic ? (
-                        <>
-                          <Check className="h-3 w-3 text-green-600" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" />
-                          Copy
-                        </>
-                      )}
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowMnemonic(!showMnemonic)}
-                    className="h-7 px-2"
-                  >
-                    {showMnemonic ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              {showMnemonic ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-3 rounded-md bg-muted">
-                  {mnemonicWords.map((word, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="justify-start font-mono text-xs py-1.5 px-2"
-                    >
-                      <span className="text-muted-foreground mr-1">
-                        {i + 1}.
-                      </span>
-                      {word}
-                    </Badge>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-md bg-muted px-3 py-3 text-sm text-muted-foreground">
-                  Click the eye icon to reveal your mnemonic phrase
-                </div>
-              )}
-            </div>
-
-            {/* Multi-Chain Address Tree */}
-            {chainAddresses.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <TreePine className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">
-                    Multi-Chain Address Tree
-                  </Label>
-                </div>
-                <div className="rounded-md border border-border bg-card overflow-hidden">
-                  {chainAddresses.map((item, index) => {
-                    const isLast = index === chainAddresses.length - 1;
-                    return (
-                      <div
-                        key={item.label}
-                        className="animate-fade-in-up border-b border-border last:border-b-0 px-4 py-3"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-muted-foreground font-mono text-xs select-none">
-                            {isLast ? "└──" : "├──"}
-                          </span>
-                          <Badge
-                            variant="secondary"
-                            className="text-xs font-medium"
-                          >
-                            {item.label}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2 ml-8">
-                          <code className="flex-1 text-xs font-mono break-all text-foreground/80">
-                            {item.address}
-                          </code>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyAddress(item.address)}
-                            className="h-7 px-2 shrink-0"
-                          >
-                            {copiedAddress === item.address ? (
-                              <Check className="h-3 w-3 text-green-600" />
-                            ) : (
-                              <Copy className="h-3 w-3" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Copy All */}
-                <Button
-                  variant="outline"
-                  onClick={copyAllAddresses}
-                  className="w-full"
-                >
-                  {copiedAll ? (
-                    <>
-                      <Check className="h-4 w-4 text-green-600" />
-                      Copied All Addresses!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy All Addresses
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
+      {!wallet ? (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-[#111d4a]">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter password (min 6 chars)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              className="rounded-xl"
+            />
           </div>
-        )}
-      </CardContent>
-    </Card>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <button
+            onClick={handleCreate}
+            disabled={loading}
+            className="w-full py-3 rounded-full bg-[#007fff] text-white text-sm font-medium hover:bg-[#006cd9] transition-colors disabled:opacity-50"
+            style={{ boxShadow: "0 4px 14px 0 color-mix(in srgb, #007fff 20%, transparent)" }}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Creating wallet...
+              </span>
+            ) : (
+              "Create Wallet"
+            )}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-5 animate-fade-in-up">
+          {/* Success — 龙图标祝福 */}
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10">
+            <div className="w-10 h-10 rounded-full identity-gradient flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-lg">🐉</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-[#111d4a]">
+                Wallet created — your digital world is ready
+              </p>
+              <p className="text-xs text-[#99a1af] mt-0.5">
+                One seed, five chains, fully under your control
+              </p>
+            </div>
+          </div>
+
+          {/* Mnemonic */}
+          <div className="p-3 rounded-xl bg-amber-50 ring-1 ring-amber-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-600 text-sm">🔑</span>
+                <span className="text-xs font-medium text-amber-700 uppercase tracking-wider">
+                  Secret Recovery Phrase
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                {showMnemonic && (
+                  <button
+                    onClick={copyMnemonic}
+                    className="p-1 rounded-full hover:bg-amber-100 transition-colors"
+                    title="Copy mnemonic"
+                  >
+                    {copiedMnemonic ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5 text-amber-600" />
+                    )}
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowMnemonic(!showMnemonic)}
+                  className="p-1 rounded-full hover:bg-amber-100 transition-colors"
+                >
+                  {showMnemonic ? (
+                    <EyeOff className="h-3.5 w-3.5 text-amber-600" />
+                  ) : (
+                    <Eye className="h-3.5 w-3.5 text-amber-600" />
+                  )}
+                </button>
+              </div>
+            </div>
+            {showMnemonic ? (
+              <p className="font-mono text-xs text-amber-800 leading-relaxed break-all">
+                {wallet.mnemonic}
+              </p>
+            ) : (
+              <p className="text-xs text-amber-600">
+                Click the eye icon to reveal
+              </p>
+            )}
+            <p className="text-[10px] text-amber-500 mt-2">
+              ⚠ Never share this phrase. Anyone with it can steal your assets.
+            </p>
+          </div>
+
+          {/* Multi-Chain Address Tree */}
+          {chainAddresses.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm">🌱</span>
+                <span className="text-xs font-semibold text-[#111d4a] uppercase tracking-wider">
+                  Multi-Chain Address Tree
+                </span>
+              </div>
+
+              {chainAddresses.map((addr, i) => {
+                const style = chainStyles[addr.chain] || chainStyles.ETHEREUM;
+                return (
+                  <div
+                    key={i}
+                    className={`animate-address-reveal flex items-center justify-between p-3 rounded-xl ring-1 ring-[#111d4a]/10 border-l-4 ${style.border} ${style.bg} bg-[#f8f9fa] hover:shadow-md transition-shadow duration-200`}
+                    style={{ animationDelay: `${i * 0.12}s` }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-lg flex-shrink-0">{style.icon}</span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-[#111d4a]">
+                          {addr.label}
+                        </p>
+                        <p className="text-xs font-mono text-[#99a1af] truncate max-w-[240px] sm:max-w-[320px]">
+                          {addr.address}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => copyAddress(addr.address, i)}
+                      className="flex-shrink-0 ml-2 p-1.5 rounded-full hover:bg-[#f0f2f5] transition-colors"
+                      title="Copy address"
+                    >
+                      {copiedIndex === i ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5 text-[#99a1af]" />
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+
+              {/* Copy All */}
+              <button
+                onClick={copyAll}
+                className="mt-3 w-full py-2.5 rounded-full bg-[#007fff] text-white text-sm font-medium hover:bg-[#006cd9] transition-colors"
+                style={{ boxShadow: "0 4px 14px 0 color-mix(in srgb, #007fff 20%, transparent)" }}
+              >
+                {allCopied ? "✓ Copied All Addresses" : "Copy All Addresses"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
