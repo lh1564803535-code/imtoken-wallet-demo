@@ -115,3 +115,123 @@
 .animate-breathe {
   animation: breathe 4s ease-in-out infinite;
 }
+
+/* === 生日庆祝动画 === */
+
+/* 纸屑飘落 */
+@keyframes confetti-fall {
+  0% { transform: translateY(-40px) rotate(0deg); opacity: 0.95; }
+  100% { transform: translateY(100vh) rotate(320deg); opacity: 0; }
+}
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  overflow: hidden;
+}
+.confetti {
+  position: absolute;
+  top: -24px;
+  width: 12px;
+  height: 18px;
+  border-radius: 4px;
+  opacity: 0.95;
+  transform: rotate(18deg);
+  animation: confetti-fall linear infinite;
+}
+.confetti:nth-child(3n) { width: 10px; height: 10px; border-radius: 50%; }
+.confetti:nth-child(4n) { width: 16px; height: 8px; border-radius: 999px; }
+
+/* 气球飘浮 */
+@keyframes balloon-rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  8% { opacity: 0.8; }
+  50% { transform: translateY(-50vh) translateX(8px); }
+  100% { transform: translateY(-110vh) translateX(-8px); opacity: 0; }
+}
+.balloon {
+  position: fixed;
+  bottom: -140px;
+  width: 60px;
+  height: 80px;
+  border-radius: 50% 50% 46% 46%;
+  box-shadow: inset -8px -14px 20px rgba(0,0,0,0.08), 0 14px 24px rgba(0, 70, 130, 0.16);
+  animation: balloon-rise 14s linear infinite;
+  z-index: 40;
+}
+.balloon::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -28px;
+  width: 1px;
+  height: 32px;
+  background: rgba(255,255,255,0.6);
+  transform: translateX(-50%);
+}
+.balloon::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 14px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: rotate(18deg);
+}
+
+/* 蛋糕火焰跳动 */
+@keyframes flame-flicker {
+  from { transform: translateX(-50%) rotate(-5deg) scale(0.98); }
+  to { transform: translateX(-50%) rotate(8deg) scale(1.08); }
+}
+.cake-flame {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  width: 18px;
+  height: 26px;
+  transform: translateX(-50%) rotate(8deg);
+  border-radius: 50% 50% 48% 48% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 28%, #fffbe0 0 18%, #ffd95a 38%, #ff9a1f 72%, rgba(255,154,31,0) 74%);
+  filter: blur(0.2px) drop-shadow(0 0 12px rgba(255, 187, 68, 0.7));
+  animation: flame-flicker 1.2s ease-in-out infinite alternate;
+  transform-origin: center bottom;
+}
+.cake-flame::after {
+  content: "";
+  position: absolute;
+  inset: 6px 4px 8px;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.95), rgba(255,255,255,0) 62%);
+  opacity: 0.75;
+}
+
+/* 蛋糕滑入动画 */
+@keyframes cake-rise {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-cake-rise {
+  animation: cake-rise 0.8s ease-out 0.8s both;
+}
+
+/* 闪光点 */
+@keyframes twinkle {
+  0%, 100% { transform: scale(0.9); opacity: 0.5; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+.sparkle-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.95) 0 28%, rgba(255,255,255,0) 70%);
+  box-shadow: 0 0 18px rgba(255,255,255,0.8);
+  animation: twinkle 2.8s ease-in-out infinite;
+}
