@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallet, Copy, Eye, EyeOff } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Wallet, Copy, Check, Eye, EyeOff, Loader2 } from "lucide-react";
 import type { WalletData } from "@/lib/tcx";
 
 interface Props {
@@ -24,6 +25,8 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showMnemonic, setShowMnemonic] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+  const [copiedMnemonic, setCopiedMnemonic] = useState(false);
 
   const handleCreate = async () => {
     if (!password || password.length < 6) {
@@ -45,18 +48,28 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   };
 
   const copyAddress = () => {
-    if (wallet) navigator.clipboard.writeText(wallet.address);
+    if (wallet) {
+      navigator.clipboard.writeText(wallet.address);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 1500);
+    }
   };
 
   const copyMnemonic = () => {
-    if (wallet) navigator.clipboard.writeText(wallet.mnemonic);
+    if (wallet) {
+      navigator.clipboard.writeText(wallet.mnemonic);
+      setCopiedMnemonic(true);
+      setTimeout(() => setCopiedMnemonic(false), 1500);
+    }
   };
 
+  const mnemonicWords = wallet?.mnemonic.split(" ") || [];
+
   return (
-    <Card>
+    <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wallet className="h-5 w-5" />
+          <Wallet className="h-5 w-5 text-primary" />
           Create Wallet
         </CardTitle>
         <CardDescription>
@@ -74,57 +87,111 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                 placeholder="Enter password (min 6 chars)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               />
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button onClick={handleCreate} disabled={loading} className="w-full">
-              {loading ? "Creating..." : "Create Wallet"}
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button
+              onClick={handleCreate}
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creating wallet...
+                </>
+              ) : (
+                "Create Wallet"
+              )}
             </Button>
           </>
         ) : (
-          <div className="space-y-3">
-            <div className="rounded-lg bg-green-50 p-3 text-green-700 text-sm">
+          <div className="space-y-4 animate-fade-in-up">
+            <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-green-700 text-sm font-medium">
               ✅ Wallet created successfully!
             </div>
-            <div className="space-y-1">
+
+            {/* Address */}
+            <div className="space-y-1.5">
               <Label>Address</Label>
               <div className="flex items-center gap-2">
-                <code className="flex-1 rounded bg-muted px-2 py-1 text-sm font-mono break-all">
+                <code className="flex-1 rounded-md bg-muted px-3 py-2 text-sm font-mono break-all">
                   {wallet.address}
                 </code>
-                <Button variant="outline" size="icon" onClick={copyAddress}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <Label>Mnemonic</Label>
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowMnemonic(!showMnemonic)}
+                  variant="outline"
+                  size="icon"
+                  onClick={copyAddress}
+                  className="shrink-0"
                 >
-                  {showMnemonic ? (
-                    <EyeOff className="h-4 w-4" />
+                  {copiedAddress ? (
+                    <Check className="h-4 w-4 text-green-600" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                   )}
                 </Button>
               </div>
-              {showMnemonic ? (
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 rounded bg-muted px-2 py-2 text-sm font-mono break-all">
-                    {wallet.mnemonic}
-                  </code>
-                  <Button variant="outline" size="icon" onClick={copyMnemonic}>
-                    <Copy className="h-4 w-4" />
+            </div>
+
+            {/* Mnemonic */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label>Mnemonic Phrase</Label>
+                <div className="flex items-center gap-1">
+                  {showMnemonic && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={copyMnemonic}
+                      className="h-7 px-2 text-xs"
+                    >
+                      {copiedMnemonic ? (
+                        <>
+                          <Check className="h-3 w-3 text-green-600" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowMnemonic(!showMnemonic)}
+                    className="h-7 px-2"
+                  >
+                    {showMnemonic ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
+              </div>
+              {showMnemonic ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-3 rounded-md bg-muted">
+                  {mnemonicWords.map((word, i) => (
+                    <Badge
+                      key={i}
+                      variant="secondary"
+                      className="justify-start font-mono text-xs py-1.5 px-2"
+                    >
+                      <span className="text-muted-foreground mr-1">
+                        {i + 1}.
+                      </span>
+                      {word}
+                    </Badge>
+                  ))}
+                </div>
               ) : (
-                <code className="block rounded bg-muted px-2 py-2 text-sm">
-                  ••••••••••••••••••••••••••••••••
-                </code>
+                <div className="rounded-md bg-muted px-3 py-3 text-sm text-muted-foreground">
+                  Click the eye icon to reveal your mnemonic phrase
+                </div>
               )}
             </div>
           </div>

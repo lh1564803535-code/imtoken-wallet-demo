@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PenLine, Copy } from "lucide-react";
+import { PenLine, Copy, Check, Loader2 } from "lucide-react";
 import type { WalletData } from "@/lib/tcx";
 
 interface Props {
@@ -23,6 +23,7 @@ export function SignMessage({ wallet }: Props) {
   const [signature, setSignature] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleSign = async () => {
     if (!wallet || !message) return;
@@ -46,18 +47,25 @@ export function SignMessage({ wallet }: Props) {
 
   const copySignature = () => {
     navigator.clipboard.writeText(signature);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
-    <Card>
+    <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <PenLine className="h-5 w-5" />
+          <PenLine className="h-5 w-5 text-primary" />
           Sign Message
         </CardTitle>
         <CardDescription>Sign a message with your wallet</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {!wallet && (
+          <div className="rounded-md bg-muted px-3 py-3 text-sm text-muted-foreground">
+            Create a wallet first to sign messages
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="message">Message</Label>
           <Input
@@ -66,27 +74,50 @@ export function SignMessage({ wallet }: Props) {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             disabled={!wallet}
+            onKeyDown={(e) => e.key === "Enter" && handleSign()}
           />
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <Button
           onClick={handleSign}
           disabled={!wallet || loading || !message}
           className="w-full"
         >
-          {loading ? "Signing..." : "Sign Message"}
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Signing...
+            </>
+          ) : (
+            "Sign Message"
+          )}
         </Button>
         {signature && (
-          <div className="space-y-1">
-            <Label>Signature</Label>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 rounded bg-muted px-2 py-2 text-xs font-mono break-all">
-                {signature}
-              </code>
-              <Button variant="outline" size="icon" onClick={copySignature}>
-                <Copy className="h-4 w-4" />
+          <div className="space-y-1.5 animate-fade-in-up">
+            <div className="flex items-center justify-between">
+              <Label>Signature</Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={copySignature}
+                className="h-7 px-2 text-xs"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-3 w-3 text-green-600" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    Copy
+                  </>
+                )}
               </Button>
             </div>
+            <code className="block rounded-md bg-muted px-3 py-2 text-xs font-mono break-all">
+              {signature}
+            </code>
           </div>
         )}
       </CardContent>

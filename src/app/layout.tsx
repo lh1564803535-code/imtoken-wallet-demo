@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "imToken Wallet Demo",
-  description: "Token Core (tcx-wasm) browser wallet demo",
+  title: "imToken Wallet Demo — 10th Anniversary",
+  description:
+    "Browser-native wallet powered by Token Core (tcx-wasm). Create, sign, and manage ETH wallets directly in your browser.",
 };
 
 export default function RootLayout({
@@ -27,7 +28,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#f8fafc]">{children}</body>
     </html>
   );
 }
