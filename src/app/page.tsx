@@ -108,6 +108,9 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
             Your Digital World,<br />Under Your Control
           </h1>
+          <p className="mt-3 text-lg md:text-xl text-white/90 font-medium tracking-tight">
+            For users who refuse to trust anyone with their keys.
+          </p>
           <p className="mt-4 text-lg md:text-xl text-white/90 max-w-lg leading-relaxed font-medium">
             1 Seed · 5 Chains · 0 Servers · Pure Cryptography
           </p>
@@ -139,7 +142,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 mx-auto w-full max-w-2xl px-4 -mt-4 relative z-10 pb-12">
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 -mt-4 relative z-10 pb-12">
         {/* Zero Trust Architecture Banner */}
         <div className="mb-4 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 px-4 py-3 flex items-start gap-3">
           <Lock className="h-4 w-4 text-[#007fff] mt-0.5 flex-shrink-0" />

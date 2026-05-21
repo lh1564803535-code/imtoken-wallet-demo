@@ -213,3 +213,63 @@ export async function signOwnershipProof(
   const result = JSON.parse(resultStr);
   return { message, signature: result.signature as string };
 }
+
+export async function verifyOwnershipProof(
+  message: string,
+  signature: string,
+  ethAddress: string
+): Promise<{ valid: boolean; recoveredAddress: string }> {
+  try {
+    // 动态导入 ethers.js（只在这一步引入，不影响包大小）
+    const { ethers } = await import("ethers");
+
+    // 用 ethers 验证签名，恢复签名者地址
+    const recovered = ethers.verifyMessage(message, signature);
+
+    // 比较恢复的地址和预期地址（不区分大小写）
+    const valid = recovered.toLowerCase() === ethAddress.toLowerCase();
+
+    return { valid, recoveredAddress: recovered };
+  } catch (e: any) {
+    return { valid: false, recoveredAddress: e.message || "Verification failed" };
+  }
+}
+
+export async function signTransaction(
+  keystoreJson: string,
+  password: string,
+  params: { to: string; amount: string; gasLimit: string; chainId: number }
+): Promise<string> {
+  await ensureInit();
+  
+  // Convert amount from ETH to Wei (hex)
+  const amountFloat = parseFloat(params.amount) || 0;
+  const weiValue = BigInt(Math.floor(amountFloat * 1e18));
+  const valueHex = "0x" + weiValue.toString(16);
+  
+  // Construct EIP-155 legacy transaction
+  const txInput = {
+    keystoreJson,
+    key: password,
+    chain: "ETHEREUM",
+    derivationPath: "m/44'/60'/0'/0/0",
+    input: {
+      nonce: "0x0",
+      gasPrice: "0x4a817c800", // 20 Gwei
+      gasLimit: "0x" + parseInt(params.gasLimit).toString(16),
+      to: params.to,
+      value: valueHex,
+      data: "0x",
+      chainId: params.chainId,
+    },
+  };
+
+  try {
+    const { sign_tx } = await import("@consenlabs/tcx-wasm");
+    const resultStr = sign_tx(JSON.stringify(txInput));
+    const result = JSON.parse(resultStr);
+    return result.signature || result.signedTx || result.rawTx || resultStr;
+  } catch (e: any) {
+    throw new Error(e.message || "Transaction signing failed");
+  }
+}

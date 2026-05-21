@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Wallet, Copy, Check, Eye, EyeOff, Loader2,
-  ShieldCheck, Fingerprint, ChevronDown, ChevronRight, ArrowRight,
+  ShieldCheck, Fingerprint, ChevronDown, ChevronRight, ArrowRight, BadgeCheck,
 } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
@@ -58,6 +58,8 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [proof, setProof] = useState<{ message: string; signature: string } | null>(null);
   const [proofLoading, setProofLoading] = useState(false);
   const [proofCopied, setProofCopied] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ valid: boolean; recoveredAddress: string } | null>(null);
+  const [verifyLoading, setVerifyLoading] = useState(false);
 
   const handleCreate = async () => {
     if (!password || password.length < 6) {
@@ -362,6 +364,58 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                       </>
                     )}
                   </button>
+
+                  {/* Verify Signature */}
+                  <button
+                    onClick={async () => {
+                      if (!proof || !wallet) return;
+                      setVerifyLoading(true);
+                      try {
+                        const { verifyOwnershipProof } = await import("@/lib/tcx");
+                        const ethAddr = chainAddresses.find(a => a.chain === "ETHEREUM")?.address || wallet.address;
+                        const result = await verifyOwnershipProof(proof.message, proof.signature, ethAddr);
+                        setVerifyResult(result);
+                      } catch {
+                        setVerifyResult({ valid: false, recoveredAddress: "Verification error" });
+                      } finally {
+                        setVerifyLoading(false);
+                      }
+                    }}
+                    disabled={verifyLoading}
+                    className="w-full py-2.5 rounded-full ring-1 ring-emerald-200 text-sm font-medium text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {verifyLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        <BadgeCheck className="h-4 w-4" />
+                        Verify Signature
+                      </>
+                    )}
+                  </button>
+
+                  {/* Verify Result */}
+                  {verifyResult && (
+                    <div className={`flex items-center gap-2 p-2.5 rounded-xl text-xs font-medium ${
+                      verifyResult.valid
+                        ? "bg-emerald-50 ring-1 ring-emerald-200 text-emerald-700"
+                        : "bg-red-50 ring-1 ring-red-200 text-red-700"
+                    }`}>
+                      {verifyResult.valid ? (
+                        <>
+                          <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                          <span>✅ Signature valid — signer: <code className="font-mono">{verifyResult.recoveredAddress.slice(0, 6)}...{verifyResult.recoveredAddress.slice(-4)}</code></span>
+                        </>
+                      ) : (
+                        <>
+                          <span>❌ {verifyResult.recoveredAddress}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
