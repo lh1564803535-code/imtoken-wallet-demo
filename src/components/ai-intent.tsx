@@ -169,7 +169,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
         case "purchase":
         case "show-shop":
         case "show-vault":
-          onAction(result.action);
+          onNavigate("shop");
           break;
       }
     }
@@ -270,7 +270,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                         case "purchase":
                         case "show-shop":
                         case "show-vault":
-                          onAction(result.action);
+                          onNavigate("shop");
                           break;
                       }
                     }
