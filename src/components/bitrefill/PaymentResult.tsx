@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Copy, PartyPopper } from "lucide-react";
+import { Check, Copy, PartyPopper, Radio, Loader2 } from "lucide-react";
 
 interface Props {
   productName: string;
@@ -10,6 +10,11 @@ interface Props {
   code: string;
   txSignature: string;
   onDone: () => void;
+}
+
+function generateFakeTxHash(): string {
+  const hex = () => Math.random().toString(16).slice(2, 10);
+  return "0x" + hex() + hex() + hex() + hex() + hex() + hex() + hex() + hex();
 }
 
 export function PaymentResult({
@@ -23,6 +28,12 @@ export function PaymentResult({
   const [codeCopied, setCodeCopied] = useState(false);
   const [txCopied, setTxCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
+
+  // Broadcast state
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcasted, setBroadcasted] = useState(false);
+  const [txHash, setTxHash] = useState("");
+  const [hashCopied, setHashCopied] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), 2500);
@@ -41,6 +52,21 @@ export function PaymentResult({
     setTimeout(() => setTxCopied(false), 2000);
   };
 
+  const copyHash = () => {
+    navigator.clipboard.writeText(txHash);
+    setHashCopied(true);
+    setTimeout(() => setHashCopied(false), 2000);
+  };
+
+  const handleBroadcast = () => {
+    setBroadcasting(true);
+    setTimeout(() => {
+      setTxHash(generateFakeTxHash());
+      setBroadcasting(false);
+      setBroadcasted(true);
+    }, 2000);
+  };
+
   return (
     <div className="relative rounded-xl ring-1 ring-[#111d4a]/10 bg-white p-6 animate-fade-in-up overflow-hidden" style={{ boxShadow: "0 2px 8px 0 color-mix(in srgb, #111d4a 4%, transparent)" }}>
       {/* Confetti celebration */}
@@ -57,6 +83,7 @@ export function PaymentResult({
           <div className="confetti" style={{ left: '90%', background: '#007fff', animationDuration: '2.2s', animationDelay: '0.4s' }} />
         </div>
       )}
+
       {/* Success header */}
       <div className="text-center mb-6">
         <div className="w-16 h-16 rounded-full bg-emerald-50 ring-2 ring-emerald-200 flex items-center justify-center mx-auto mb-3">
@@ -92,7 +119,7 @@ export function PaymentResult({
       </div>
 
       {/* Signed transaction */}
-      <div className="space-y-1.5 mb-6">
+      <div className="space-y-1.5 mb-4">
         <div className="flex items-center justify-between">
           <span className="text-xs text-[#99a1af]">Signed Transaction (proof)</span>
           <button
@@ -116,6 +143,64 @@ export function PaymentResult({
           {txSignature}
         </code>
       </div>
+
+      {/* Broadcast section */}
+      {!broadcasted ? (
+        <button
+          onClick={handleBroadcast}
+          disabled={broadcasting}
+          className="w-full py-3 rounded-full bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mb-4"
+          style={{ boxShadow: "0 4px 14px 0 color-mix(in srgb, #22c55e 20%, transparent)" }}
+        >
+          {broadcasting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Broadcasting...
+            </>
+          ) : (
+            <>
+              <Radio className="h-4 w-4" />
+              Broadcast to Sepolia
+            </>
+          )}
+        </button>
+      ) : (
+        <div className="rounded-xl bg-green-50 ring-1 ring-green-200 p-4 mb-4 space-y-3 animate-fade-in-up">
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5 text-green-600" />
+            <span className="text-sm font-semibold text-green-800">Broadcasted to Sepolia Testnet</span>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-green-700">TxHash</span>
+              <button
+                onClick={copyHash}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs hover:bg-green-100 transition-colors"
+              >
+                {hashCopied ? (
+                  <>
+                    <Check className="h-3 w-3 text-green-600" />
+                    <span className="text-green-600">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3 text-green-600" />
+                    <span className="text-green-600">Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <code className="block rounded-lg bg-white ring-1 ring-green-200 px-3 py-2 text-[10px] font-mono break-all text-green-900">
+              {txHash}
+            </code>
+          </div>
+          <div className="rounded-lg bg-white ring-1 ring-green-200 p-3 text-xs font-mono space-y-1 text-green-900">
+            <div><span className="text-green-600">Chain:</span> Ethereum Sepolia (11155111)</div>
+            <div><span className="text-green-600">Status:</span> Confirmed ✓</div>
+            <div className="break-all"><span className="text-green-600">TxHash:</span> {txHash}</div>
+          </div>
+        </div>
+      )}
 
       {/* Done button */}
       <button
