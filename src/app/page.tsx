@@ -137,7 +137,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 mx-auto w-full max-w-2xl px-4 -mt-4 relative z-10 pb-12">
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 -mt-4 relative z-10 pb-12">
         {/* Zero Trust Architecture Banner */}
         <div className="mb-4 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 px-4 py-3 flex items-start gap-3">
           <Lock className="h-4 w-4 text-[#007fff] mt-0.5 flex-shrink-0" />
@@ -149,24 +149,26 @@ export default function Home() {
           </div>
         </div>
         <Tabs defaultValue="create" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 shadow-sm rounded-full">
-            <TabsTrigger value="create" className="gap-1.5 rounded-full">
-              <Wallet className="h-4 w-4" />
-              <span className="hidden sm:inline">Create</span>
-            </TabsTrigger>
-            <TabsTrigger value="sign" className="gap-1.5 rounded-full">
-              <PenLine className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="gap-1.5 rounded-full">
-              <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">Security</span>
-            </TabsTrigger>
-            <TabsTrigger value="connect" className="gap-1.5 rounded-full">
-              <Link2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Connect</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="sticky top-0 z-20 bg-gradient-to-b from-[#f0f7ff] via-[#f0f7ff] to-transparent pt-2 pb-3">
+            <TabsList className="grid w-full grid-cols-4 shadow-sm rounded-full">
+              <TabsTrigger value="create" className="gap-1.5 rounded-full">
+                <Wallet className="h-4 w-4" />
+                <span className="hidden sm:inline">Create</span>
+              </TabsTrigger>
+              <TabsTrigger value="sign" className="gap-1.5 rounded-full">
+                <PenLine className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign</span>
+              </TabsTrigger>
+              <TabsTrigger value="security" className="gap-1.5 rounded-full">
+                <Shield className="h-4 w-4" />
+                <span className="hidden sm:inline">Security</span>
+              </TabsTrigger>
+              <TabsTrigger value="connect" className="gap-1.5 rounded-full">
+                <Link2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Connect</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="create">
             <CreateWallet onWalletCreated={setWallet} wallet={wallet} />

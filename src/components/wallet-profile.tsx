@@ -37,7 +37,7 @@ export function WalletProfile() {
           </h3>
         </div>
         <p className="text-sm text-[#99a1af] mb-5">
-          Connect MetaMask, WalletConnect, or other wallets
+          Connect your external wallet to interact with DApps on Base Sepolia
         </p>
         <div className="rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 px-3 py-3 text-sm text-[#99a1af] mb-4">
           Connect an external wallet to interact with Base Sepolia testnet.

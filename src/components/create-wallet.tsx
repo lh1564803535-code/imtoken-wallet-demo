@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallet, Copy, Check, Eye, EyeOff, Loader2, ShieldCheck, Fingerprint } from "lucide-react";
+import {
+  Wallet, Copy, Check, Eye, EyeOff, Loader2,
+  ShieldCheck, Fingerprint, ChevronDown, ChevronRight, ArrowRight,
+} from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 const chainStyles: Record<string, { border: string; bg: string; icon: string }> = {
@@ -18,6 +20,31 @@ interface Props {
   wallet: WalletData | null;
 }
 
+function StepIndicator({ current }: { current: number }) {
+  const steps = ["Create", "Backup", "Addresses", "Prove"];
+  return (
+    <div className="flex items-center gap-1 text-[10px] text-[#99a1af] mb-4">
+      {steps.map((s, i) => (
+        <div key={s} className="flex items-center gap-1">
+          <span
+            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+              i < current
+                ? "bg-[#007fff] text-white"
+                : i === current
+                ? "bg-[#007fff]/15 text-[#007fff] ring-1 ring-[#007fff]/30"
+                : "bg-[#f0f2f5] text-[#99a1af]"
+            }`}
+          >
+            {i < current ? "✓" : i + 1}
+          </span>
+          <span className={i === current ? "text-[#111d4a] font-medium" : ""}>{s}</span>
+          {i < steps.length - 1 && <span className="mx-0.5 text-[#e0e3e8]">→</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,6 +54,7 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
   const [allCopied, setAllCopied] = useState(false);
   const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
+  const [showAllChains, setShowAllChains] = useState(false);
   const [proof, setProof] = useState<{ message: string; signature: string } | null>(null);
   const [proofLoading, setProofLoading] = useState(false);
   const [proofCopied, setProofCopied] = useState(false);
@@ -69,9 +97,7 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   };
 
   const copyAll = () => {
-    const text = chainAddresses
-      .map((a) => `${a.label}: ${a.address}`)
-      .join("\n");
+    const text = chainAddresses.map((a) => `${a.label}: ${a.address}`).join("\n");
     navigator.clipboard.writeText(text);
     setAllCopied(true);
     setTimeout(() => setAllCopied(false), 1500);
@@ -82,13 +108,9 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     setProofLoading(true);
     try {
       const { signOwnershipProof } = await import("@/lib/tcx");
-      const result = await signOwnershipProof(
-        wallet.keystoreJson,
-        wallet.password,
-        chainAddresses
-      );
+      const result = await signOwnershipProof(wallet.keystoreJson, wallet.password, chainAddresses);
       setProof(result);
-    } catch (e: any) {
+    } catch {
       // silently fail
     } finally {
       setProofLoading(false);
@@ -102,6 +124,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     setProofCopied(true);
     setTimeout(() => setProofCopied(false), 1500);
   };
+
+  // Determine current step
+  const currentStep = !wallet ? 0 : proof ? 3 : chainAddresses.length > 0 ? 2 : 1;
+  const visibleChains = showAllChains ? chainAddresses : chainAddresses.slice(0, 3);
 
   return (
     <div className="rounded-xl ring-1 ring-[#111d4a]/10 bg-white p-6" style={{ boxShadow: "0 2px 8px 0 color-mix(in srgb, #111d4a 4%, transparent)" }}>
@@ -145,8 +171,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
           </button>
         </div>
       ) : (
-        <div className="space-y-5 animate-fade-in-up">
-          {/* Success — 龙图标祝福 */}
+        <div className="space-y-4 animate-fade-in-up">
+          <StepIndicator current={currentStep} />
+
+          {/* Step 1: Wallet Created */}
           <div className="flex items-center gap-3 p-4 rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10">
             <div className="w-10 h-10 rounded-full identity-gradient flex items-center justify-center flex-shrink-0">
               <span className="text-white text-lg">🐉</span>
@@ -161,19 +189,25 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
             </div>
           </div>
 
-          {/* Mnemonic */}
-          <div className="p-3 rounded-xl bg-amber-50 ring-1 ring-amber-200">
-            <div className="flex items-center justify-between mb-2">
+          {/* Step 2: Secret Recovery Phrase (collapsible) */}
+          <div className="rounded-xl ring-1 ring-amber-200 bg-amber-50/50 overflow-hidden">
+            <button
+              onClick={() => setShowMnemonic(!showMnemonic)}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-amber-50 transition-colors"
+            >
               <div className="flex items-center gap-2">
                 <span className="text-amber-600 text-sm">🔑</span>
                 <span className="text-xs font-medium text-amber-700 uppercase tracking-wider">
                   Secret Recovery Phrase
                 </span>
+                {!showMnemonic && (
+                  <span className="text-[10px] text-amber-500 ml-1">— click to reveal</span>
+                )}
               </div>
               <div className="flex items-center gap-1">
                 {showMnemonic && (
                   <button
-                    onClick={copyMnemonic}
+                    onClick={(e) => { e.stopPropagation(); copyMnemonic(); }}
                     className="p-1 rounded-full hover:bg-amber-100 transition-colors"
                     title="Copy mnemonic"
                   >
@@ -184,57 +218,49 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                     )}
                   </button>
                 )}
-                <button
-                  onClick={() => setShowMnemonic(!showMnemonic)}
-                  className="p-1 rounded-full hover:bg-amber-100 transition-colors"
-                >
-                  {showMnemonic ? (
-                    <EyeOff className="h-3.5 w-3.5 text-amber-600" />
-                  ) : (
-                    <Eye className="h-3.5 w-3.5 text-amber-600" />
-                  )}
-                </button>
+                {showMnemonic ? (
+                  <EyeOff className="h-4 w-4 text-amber-600" />
+                ) : (
+                  <Eye className="h-4 w-4 text-amber-600" />
+                )}
               </div>
-            </div>
-            {showMnemonic ? (
-              <p className="font-mono text-xs text-amber-800 leading-relaxed break-all">
-                {wallet.mnemonic}
-              </p>
-            ) : (
-              <p className="text-xs text-amber-600">
-                Click the eye icon to reveal
-              </p>
+            </button>
+            {showMnemonic && (
+              <div className="px-4 pb-4 animate-fade-in-up">
+                <p className="font-mono text-xs text-amber-800 leading-relaxed break-all bg-white/60 rounded-lg p-3 ring-1 ring-amber-100">
+                  {wallet.mnemonic}
+                </p>
+                <p className="text-[10px] text-amber-500 mt-2">
+                  ⚠ Never share this phrase. Anyone with it can steal your assets.
+                </p>
+              </div>
             )}
-            <p className="text-[10px] text-amber-500 mt-2">
-              ⚠ Never share this phrase. Anyone with it can steal your assets.
-            </p>
           </div>
 
-          {/* Multi-Chain Address Tree */}
+          {/* Step 3: Multi-Chain Addresses */}
           {chainAddresses.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm">🌱</span>
                 <span className="text-xs font-semibold text-[#111d4a] uppercase tracking-wider">
-                  Multi-Chain Address Tree
+                  Multi-Chain Addresses
                 </span>
+                <span className="text-[10px] text-[#99a1af] ml-auto">{chainAddresses.length} chains derived</span>
               </div>
 
-              {chainAddresses.map((addr, i) => {
+              {visibleChains.map((addr, i) => {
                 const style = chainStyles[addr.chain] || chainStyles.ETHEREUM;
                 return (
                   <div
                     key={i}
-                    className={`animate-address-reveal flex items-center justify-between p-3 rounded-xl ring-1 ring-[#111d4a]/10 border-l-4 ${style.border} ${style.bg} bg-[#f8f9fa] hover:shadow-md transition-shadow duration-200`}
+                    className={`animate-address-reveal flex items-center justify-between p-3 rounded-xl ring-1 ring-[#111d4a]/10 border-l-4 ${style.border} ${style.bg} hover:shadow-md transition-shadow duration-200`}
                     style={{ animationDelay: `${i * 0.12}s` }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-lg flex-shrink-0">{style.icon}</span>
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-[#111d4a]">
-                          {addr.label}
-                        </p>
-                        <p className="text-xs font-mono text-[#99a1af] truncate max-w-[240px] sm:max-w-[320px]">
+                        <p className="text-xs font-semibold text-[#111d4a]">{addr.label}</p>
+                        <p className="text-xs font-mono text-[#99a1af] truncate max-w-[280px] sm:max-w-[400px]">
                           {addr.address}
                         </p>
                       </div>
@@ -254,10 +280,19 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                 );
               })}
 
-              {/* Copy All */}
+              {chainAddresses.length > 3 && !showAllChains && (
+                <button
+                  onClick={() => setShowAllChains(true)}
+                  className="flex items-center gap-1 text-xs text-[#007fff] hover:text-[#006cd9] transition-colors py-1"
+                >
+                  <ChevronDown className="h-3 w-3" />
+                  Show {chainAddresses.length - 3} more chains
+                </button>
+              )}
+
               <button
                 onClick={copyAll}
-                className="mt-3 w-full py-2.5 rounded-full bg-[#007fff] text-white text-sm font-medium hover:bg-[#006cd9] transition-colors"
+                className="mt-2 w-full py-2.5 rounded-full bg-[#007fff] text-white text-sm font-medium hover:bg-[#006cd9] transition-colors"
                 style={{ boxShadow: "0 4px 14px 0 color-mix(in srgb, #007fff 20%, transparent)" }}
               >
                 {allCopied ? "✓ Copied All Addresses" : "Copy All Addresses"}
@@ -265,7 +300,7 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
             </div>
           )}
 
-          {/* Cross-Chain Ownership Proof */}
+          {/* Step 4: Cross-Chain Ownership Proof */}
           {chainAddresses.length > 0 && (
             <div className="rounded-xl ring-2 ring-[#007fff]/30 bg-white p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -296,30 +331,21 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                 </button>
               ) : (
                 <div className="space-y-3 animate-fade-in-up">
-                  {/* Proof message preview */}
                   <pre className="rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 p-3 text-[10px] font-mono overflow-auto max-h-32 text-[#111d4a] whitespace-pre-wrap">
                     {proof.message}
                   </pre>
-
-                  {/* Signature */}
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-[#111d4a]">
-                      ETH PersonalSign Signature
-                    </span>
+                    <span className="text-xs font-medium text-[#111d4a]">ETH PersonalSign Signature</span>
                     <code className="block rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 px-3 py-2 text-[10px] font-mono break-all text-[#007fff]">
                       {proof.signature}
                     </code>
                   </div>
-
-                  {/* Verified badge */}
                   <div className="flex items-center gap-2 p-2 rounded-full bg-emerald-50 ring-1 ring-emerald-200 w-fit">
                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                     <span className="text-xs font-medium text-emerald-700">
                       Verified Locally — No server involved
                     </span>
                   </div>
-
-                  {/* Copy Proof */}
                   <button
                     onClick={copyProof}
                     className="w-full py-2.5 rounded-full ring-1 ring-[#e0e3e8] text-sm font-medium text-[#111d4a] hover:bg-[#f0f2f5] transition-colors flex items-center justify-center gap-2"
@@ -338,6 +364,16 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Next Step Hint */}
+          {wallet && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 text-xs text-[#007fff]">
+              <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" />
+              <span>
+                Next: Go to <strong>Security</strong> tab to download your keystore backup
+              </span>
             </div>
           )}
         </div>

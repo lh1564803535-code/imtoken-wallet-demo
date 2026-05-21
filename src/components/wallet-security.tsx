@@ -22,6 +22,9 @@ export function WalletSecurity({ wallet }: Props) {
           <Shield className="h-5 w-5 text-[#007fff]" />
           <h3 className="text-base font-semibold text-[#111d4a]">Security</h3>
         </div>
+        <p className="text-sm text-[#99a1af] mb-2">
+          Download your keystore and check encryption strength
+        </p>
         <div className="mt-4 rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 px-3 py-3 text-sm text-[#99a1af]">
           Create a wallet first to see security details
         </div>

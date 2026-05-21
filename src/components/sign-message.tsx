@@ -49,7 +49,7 @@ export function SignMessage({ wallet }: Props) {
         <h3 className="text-base font-semibold text-[#111d4a]">Sign Message</h3>
       </div>
       <p className="text-sm text-[#99a1af] mb-5">
-        Sign a message with your wallet
+        Sign a message to prove you own this wallet — no server involved
       </p>
 
       <div className="space-y-4">
