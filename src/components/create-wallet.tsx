@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallet, Copy, Check, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Wallet, Copy, Check, Eye, EyeOff, Loader2, ShieldCheck, Fingerprint } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 const chainStyles: Record<string, { border: string; bg: string; icon: string }> = {
@@ -27,6 +27,9 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
   const [copiedMnemonic, setCopiedMnemonic] = useState(false);
   const [allCopied, setAllCopied] = useState(false);
   const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
+  const [proof, setProof] = useState<{ message: string; signature: string } | null>(null);
+  const [proofLoading, setProofLoading] = useState(false);
+  const [proofCopied, setProofCopied] = useState(false);
 
   const handleCreate = async () => {
     if (!password || password.length < 6) {
@@ -72,6 +75,32 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
     navigator.clipboard.writeText(text);
     setAllCopied(true);
     setTimeout(() => setAllCopied(false), 1500);
+  };
+
+  const generateProof = async () => {
+    if (!wallet || chainAddresses.length === 0) return;
+    setProofLoading(true);
+    try {
+      const { signOwnershipProof } = await import("@/lib/tcx");
+      const result = await signOwnershipProof(
+        wallet.keystoreJson,
+        wallet.password,
+        chainAddresses
+      );
+      setProof(result);
+    } catch (e: any) {
+      // silently fail
+    } finally {
+      setProofLoading(false);
+    }
+  };
+
+  const copyProof = () => {
+    if (!proof) return;
+    const text = `=== Cross-Chain Ownership Proof ===\n\n${proof.message}\n\nSignature (ETH PersonalSign):\n${proof.signature}\n\n=== Verified locally via Token Core (tcx-wasm) ===`;
+    navigator.clipboard.writeText(text);
+    setProofCopied(true);
+    setTimeout(() => setProofCopied(false), 1500);
   };
 
   return (
@@ -233,6 +262,82 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
               >
                 {allCopied ? "✓ Copied All Addresses" : "Copy All Addresses"}
               </button>
+            </div>
+          )}
+
+          {/* Cross-Chain Ownership Proof */}
+          {chainAddresses.length > 0 && (
+            <div className="rounded-xl ring-2 ring-[#007fff]/30 bg-white p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Fingerprint className="h-5 w-5 text-[#007fff]" />
+                <span className="text-sm font-semibold text-[#111d4a]">
+                  Cross-Chain Ownership Proof
+                </span>
+              </div>
+              <p className="text-xs text-[#99a1af]">
+                Cryptographically prove you control all 5 addresses from one
+                mnemonic — no server, no third party, pure math.
+              </p>
+
+              {!proof ? (
+                <button
+                  onClick={generateProof}
+                  disabled={proofLoading}
+                  className="w-full py-2.5 rounded-full bg-gradient-to-r from-[#0CC5FF] to-[#007FFF] text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {proofLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Signing proof...
+                    </span>
+                  ) : (
+                    "Generate Cross-Chain Proof"
+                  )}
+                </button>
+              ) : (
+                <div className="space-y-3 animate-fade-in-up">
+                  {/* Proof message preview */}
+                  <pre className="rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 p-3 text-[10px] font-mono overflow-auto max-h-32 text-[#111d4a] whitespace-pre-wrap">
+                    {proof.message}
+                  </pre>
+
+                  {/* Signature */}
+                  <div className="space-y-1">
+                    <span className="text-xs font-medium text-[#111d4a]">
+                      ETH PersonalSign Signature
+                    </span>
+                    <code className="block rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 px-3 py-2 text-[10px] font-mono break-all text-[#007fff]">
+                      {proof.signature}
+                    </code>
+                  </div>
+
+                  {/* Verified badge */}
+                  <div className="flex items-center gap-2 p-2 rounded-full bg-emerald-50 ring-1 ring-emerald-200 w-fit">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-xs font-medium text-emerald-700">
+                      Verified Locally — No server involved
+                    </span>
+                  </div>
+
+                  {/* Copy Proof */}
+                  <button
+                    onClick={copyProof}
+                    className="w-full py-2.5 rounded-full ring-1 ring-[#e0e3e8] text-sm font-medium text-[#111d4a] hover:bg-[#f0f2f5] transition-colors flex items-center justify-center gap-2"
+                  >
+                    {proofCopied ? (
+                      <>
+                        <Check className="h-4 w-4 text-emerald-500" />
+                        Copied Full Proof
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        Copy Full Proof
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

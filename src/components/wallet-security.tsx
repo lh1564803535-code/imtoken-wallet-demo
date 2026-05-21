@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, Shield, Copy, Check, Lock } from "lucide-react";
+import { Eye, EyeOff, Shield, Copy, Check, Lock, Download } from "lucide-react";
 import type { WalletData } from "@/lib/tcx";
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
 export function WalletSecurity({ wallet }: Props) {
   const [showKeystore, setShowKeystore] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [downloadWarning, setDownloadWarning] = useState(false);
 
   if (!wallet) {
     return (
@@ -189,6 +190,37 @@ export function WalletSecurity({ wallet }: Props) {
                 Click the eye icon to reveal keystore data
               </div>
             )}
+          </div>
+
+          {/* Download Keystore */}
+          <div className="space-y-2">
+            {downloadWarning && (
+              <div className="rounded-xl bg-amber-50 ring-1 ring-amber-200 p-3 text-xs text-amber-700">
+                ⚠️ Keep this file safe. Anyone with this file + your password
+                can access your assets.
+              </div>
+            )}
+            <button
+              onClick={() => {
+                if (!downloadWarning) {
+                  setDownloadWarning(true);
+                  return;
+                }
+                const blob = new Blob([wallet.keystoreJson], {
+                  type: "application/json",
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `imtoken-keystore-${wallet.address.slice(2, 8)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="w-full py-2.5 rounded-full ring-1 ring-[#e0e3e8] text-sm font-medium text-[#111d4a] hover:bg-[#f0f2f5] transition-colors flex items-center justify-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {downloadWarning ? "Confirm Download Keystore" : "Download Keystore"}
+            </button>
           </div>
         </div>
       </div>

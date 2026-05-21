@@ -172,3 +172,31 @@ export async function deriveMultiChainAddresses(
 
   return results;
 }
+
+export async function signOwnershipProof(
+  keystoreJson: string,
+  password: string,
+  addresses: ChainAddress[]
+): Promise<{ message: string; signature: string }> {
+  await ensureInit();
+  const addressList = addresses
+    .map((a) => `- ${a.label}: ${a.address}`)
+    .join("\n");
+  const timestamp = new Date().toISOString();
+  const message = `I hereby prove I control all the following addresses derived from a single mnemonic:\n${addressList}\nTimestamp: ${timestamp}`;
+
+  const resultStr = tcx_sign_message(
+    JSON.stringify({
+      keystoreJson,
+      key: password,
+      chain: "ETHEREUM",
+      derivationPath: "m/44'/60'/0'/0/0",
+      input: {
+        message,
+        signatureType: "PersonalSign",
+      },
+    })
+  );
+  const result = JSON.parse(resultStr);
+  return { message, signature: result.signature as string };
+}

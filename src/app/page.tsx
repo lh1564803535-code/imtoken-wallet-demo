@@ -7,7 +7,7 @@ import { WalletSecurity } from "@/components/wallet-security";
 import { WalletProfile } from "@/components/wallet-profile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, PenLine, Shield, Link2 } from "lucide-react";
+import { Wallet, PenLine, Shield, Link2, Lock } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { WalletData } from "@/lib/tcx";
 
@@ -138,6 +138,16 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1 mx-auto w-full max-w-2xl px-4 -mt-4 relative z-10 pb-12">
+        {/* Zero Trust Architecture Banner */}
+        <div className="mb-4 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 px-4 py-3 flex items-start gap-3">
+          <Lock className="h-4 w-4 text-[#007fff] mt-0.5 flex-shrink-0" />
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#111d4a]">
+            <span>✅ Keys generated locally via WASM</span>
+            <span>✅ PBKDF2 × 600k rounds</span>
+            <span>✅ No server involved</span>
+            <span>✅ Open source & auditable</span>
+          </div>
+        </div>
         <Tabs defaultValue="create" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6 shadow-sm rounded-full">
             <TabsTrigger value="create" className="gap-1.5 rounded-full">
