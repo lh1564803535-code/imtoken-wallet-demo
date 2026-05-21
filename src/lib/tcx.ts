@@ -238,10 +238,14 @@ export async function verifyOwnershipProof(
 export async function signTransaction(
   keystoreJson: string,
   password: string,
-  params: { to: string; amount: string; gasLimit: string; chainId: number }
+  params: { to: string; amount: string; gasLimit: string; chainId?: number },
+  chainId?: number
 ): Promise<string> {
   await ensureInit();
   
+  // Use explicit chainId param, then params.chainId, then default 1
+  const resolvedChainId = chainId ?? params.chainId ?? 1;
+
   // Convert amount from ETH to Wei (hex)
   const amountFloat = parseFloat(params.amount) || 0;
   const weiValue = BigInt(Math.floor(amountFloat * 1e18));
@@ -260,7 +264,7 @@ export async function signTransaction(
       to: params.to,
       value: valueHex,
       data: "0x",
-      chainId: params.chainId,
+      chainId: resolvedChainId,
     },
   };
 

@@ -6,17 +6,34 @@ import { ImportWallet } from "@/components/import-wallet";
 import { SignMessage } from "@/components/sign-message";
 import { WalletSecurity } from "@/components/wallet-security";
 import { AIIntent } from "@/components/ai-intent";
+import { ShopTab } from "@/components/bitrefill/ShopTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, PenLine, Shield, Download, Lock } from "lucide-react";
-import type { WalletData } from "@/lib/tcx";
+import { Wallet, PenLine, Shield, Download, Lock, ShoppingBag } from "lucide-react";
+import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 export default function Home() {
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [activeTab, setActiveTab] = useState("create");
+  const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
+  };
+
+  const handleWalletCreated = (w: WalletData) => {
+    setWallet(w);
+    // Derive addresses for balance dashboard
+    import("@/lib/tcx").then(({ deriveMultiChainAddresses }) => {
+      deriveMultiChainAddresses(w.keystoreJson, w.password).then(setChainAddresses).catch(() => {});
+    });
+  };
+
+  const handleWalletImported = (w: WalletData) => {
+    setWallet(w);
+    import("@/lib/tcx").then(({ deriveMultiChainAddresses }) => {
+      deriveMultiChainAddresses(w.keystoreJson, w.password).then(setChainAddresses).catch(() => {});
+    });
   };
 
   const handleAIAction = (action: string) => {
@@ -25,16 +42,20 @@ export default function Home() {
       case "show-btc":
       case "show-tron":
       case "show-all":
-        // Navigate to create tab where addresses are shown
         if (wallet) setActiveTab("create");
         break;
       case "copy-all":
-        // Trigger copy in create tab
         if (wallet) setActiveTab("create");
         break;
       case "prove":
-        // Navigate to create tab for proof
         if (wallet) setActiveTab("create");
+        break;
+      case "purchase":
+      case "show-shop":
+        setActiveTab("shop");
+        break;
+      case "show-vault":
+        setActiveTab("shop");
         break;
     }
   };
@@ -70,7 +91,7 @@ export default function Home() {
       {/* Hero Section */}
       <header className="relative overflow-hidden bg-gradient-to-br from-[#0CC5FF] to-[#007FFF] text-white rounded-b-[32px]">
         {/* 右侧主视觉 SVG */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[5%] w-[350px] h-[350px] md:w-[480px] md:h-[480px] opacity-30 pointer-events-none">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[10%] w-[250px] h-[250px] md:w-[320px] md:h-[320px] opacity-25 pointer-events-none">
           <img
             src="/anniversary-visual.svg"
             alt=""
@@ -101,43 +122,36 @@ export default function Home() {
         </div>
 
         {/* Hero 内容 */}
-        <div className="relative mx-auto max-w-5xl px-6 py-14 md:py-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-medium tracking-wide mb-4">
+        <div className="relative mx-auto max-w-5xl px-6 py-8 md:py-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-medium tracking-wide mb-3">
             🔐 AI-Native Zero-Trust Wallet
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
             Your Digital World,<br />Under Your Control
           </h1>
-          <p className="mt-3 text-lg md:text-xl text-white/90 font-medium tracking-tight">
-            For users who refuse to trust anyone with their keys.
-          </p>
-          <p className="mt-4 text-lg md:text-xl text-white/90 max-w-lg leading-relaxed font-medium">
+          <p className="mt-2 text-base md:text-lg text-white/90 font-medium tracking-tight">
             1 Seed · 5 Chains · 0 Servers · Pure Cryptography
           </p>
 
           {/* 核心价值主张 */}
-          <div className="mt-6 inline-flex flex-col gap-1 px-6 py-4 rounded-3xl bg-white/15 border border-white/20 backdrop-blur-sm">
-            <span className="text-base font-bold tracking-tight">Happy Birthday, imToken! 🎂</span>
-            <span className="text-sm text-white/85">十年守护用户主权，下一个十年更精彩</span>
+          <div className="mt-4 inline-flex flex-col gap-0.5 px-5 py-3 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-sm">
+            <span className="text-sm font-bold tracking-tight">Happy Birthday, imToken! 🎂</span>
+            <span className="text-xs text-white/85">十年守护用户主权，下一个十年更精彩</span>
           </div>
-
-          <p className="mt-5 text-sm text-white/60 max-w-lg leading-relaxed">
-            All wallet operations run locally in your browser via WebAssembly. No servers, no third parties, no trust required.
-          </p>
         </div>
 
         {/* 生日蛋糕 */}
-        <div className="animate-cake-rise absolute left-8 bottom-0 w-[280px] z-10">
-          <div className="absolute left-[-14px] right-[-14px] bottom-[-18px] h-[28px] rounded-full bg-gradient-to-b from-white/95 to-[#dcf2ff]/95 shadow-lg" />
-          <div className="relative h-[120px] rounded-t-3xl rounded-b-[28px] bg-gradient-to-b from-[#7de7ff] via-[#1fb8ff] to-[#007fff] border border-white/30 overflow-hidden">
+        <div className="animate-cake-rise absolute left-6 bottom-0 w-[180px] z-10">
+          <div className="absolute left-[-10px] right-[-10px] bottom-[-12px] h-[20px] rounded-full bg-gradient-to-b from-white/95 to-[#dcf2ff]/95 shadow-lg" />
+          <div className="relative h-[80px] rounded-t-2xl rounded-b-[20px] bg-gradient-to-b from-[#7de7ff] via-[#1fb8ff] to-[#007fff] border border-white/30 overflow-hidden">
             <div className="absolute inset-0 opacity-30" style={{ background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0 10px, transparent 10px 24px)' }} />
-            <div className="absolute left-1/2 top-3 -translate-x-1/2 w-16 h-16 rounded-2xl bg-gradient-to-b from-white/95 to-[#f0fbff]/90 shadow-lg flex items-center justify-center">
-              <img src="/favicon.svg" alt="" className="w-12 h-12" />
+            <div className="absolute left-1/2 top-2 -translate-x-1/2 w-11 h-11 rounded-xl bg-gradient-to-b from-white/95 to-[#f0fbff]/90 shadow-lg flex items-center justify-center">
+              <img src="/favicon.svg" alt="" className="w-8 h-8" />
             </div>
             <div className="cake-flame" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-5 rounded-full bg-gradient-to-b from-[#d7edf7] to-[#93bdd1]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-3 rounded-full bg-gradient-to-b from-[#d7edf7] to-[#93bdd1]" />
           </div>
-          <div className="absolute left-4 right-4 top-[-10px] h-[28px] rounded-full bg-gradient-to-b from-white/98 to-[#e9faff]/88 shadow-md" />
+          <div className="absolute left-3 right-3 top-[-7px] h-[18px] rounded-full bg-gradient-to-b from-white/98 to-[#e9faff]/88 shadow-md" />
         </div>
       </header>
 
@@ -158,31 +172,36 @@ export default function Home() {
         <AIIntent wallet={wallet} onNavigate={handleNavigate} onAction={handleAIAction} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 shadow-sm rounded-full">
-            <TabsTrigger value="create" className="gap-1.5 rounded-full">
+          <TabsList className="grid w-full grid-cols-5 mb-6 rounded-full p-1 h-auto">
+            <TabsTrigger value="create" className="gap-1.5 rounded-full py-2.5">
               <Wallet className="h-4 w-4" />
               <span className="hidden sm:inline">Create</span>
             </TabsTrigger>
-            <TabsTrigger value="import" className="gap-1.5 rounded-full">
+            <TabsTrigger value="import" className="gap-1.5 rounded-full py-2.5">
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Import</span>
             </TabsTrigger>
-            <TabsTrigger value="sign" className="gap-1.5 rounded-full">
+            <TabsTrigger value="sign" className="gap-1.5 rounded-full py-2.5">
               <PenLine className="h-4 w-4" />
               <span className="hidden sm:inline">Sign</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="gap-1.5 rounded-full">
+            <TabsTrigger value="security" className="gap-1.5 rounded-full py-2.5">
               <Shield className="h-4 w-4" />
               <span className="hidden sm:inline">Security</span>
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="gap-1.5 rounded-full py-2.5 relative">
+              <ShoppingBag className="h-4 w-4" />
+              <span className="hidden sm:inline">Shop</span>
+              <span className="absolute -top-1 -right-1 px-1 py-0.5 bg-red-500 text-white text-[8px] font-bold rounded-full leading-none">NEW</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="create">
-            <CreateWallet onWalletCreated={setWallet} wallet={wallet} />
+            <CreateWallet onWalletCreated={handleWalletCreated} wallet={wallet} />
           </TabsContent>
 
           <TabsContent value="import">
-            <ImportWallet onWalletImported={setWallet} wallet={wallet} />
+            <ImportWallet onWalletImported={handleWalletImported} wallet={wallet} />
           </TabsContent>
 
           <TabsContent value="sign">
@@ -191,6 +210,10 @@ export default function Home() {
 
           <TabsContent value="security">
             <WalletSecurity wallet={wallet} />
+          </TabsContent>
+
+          <TabsContent value="shop">
+            <ShopTab wallet={wallet} addresses={chainAddresses} />
           </TabsContent>
         </Tabs>
       </main>

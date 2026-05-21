@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { PenLine, Copy, Check, Loader2, Send } from "lucide-react";
+import { NETWORKS } from "@/lib/networks";
 import type { WalletData } from "@/lib/tcx";
 
 interface Props {
@@ -22,11 +22,11 @@ export function SignMessage({ wallet }: Props) {
   const [txTo, setTxTo] = useState("0x0000000000000000000000000000000000000000");
   const [txAmount, setTxAmount] = useState("0.01");
   const [txGasLimit, setTxGasLimit] = useState("21000");
-  const [txChainId, setTxChainId] = useState("1");
   const [txSignature, setTxSignature] = useState("");
   const [txLoading, setTxLoading] = useState(false);
   const [txError, setTxError] = useState("");
   const [txCopied, setTxCopied] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState(NETWORKS[0]);
 
   const handleSign = async () => {
     if (!wallet || !message) return;
@@ -66,8 +66,9 @@ export function SignMessage({ wallet }: Props) {
           to: txTo,
           amount: txAmount,
           gasLimit: txGasLimit,
-          chainId: parseInt(txChainId),
-        }
+          chainId: selectedNetwork.chainId,
+        },
+        selectedNetwork.chainId
       );
       setTxSignature(sig);
     } catch (e: any) {
@@ -168,6 +169,22 @@ export function SignMessage({ wallet }: Props) {
           </div>
         ) : (
           <div className="space-y-4">
+            {/* Network Selector */}
+            <select
+              value={selectedNetwork.chainId}
+              onChange={(e) => {
+                const net = NETWORKS.find((n) => n.chainId === Number(e.target.value));
+                if (net) setSelectedNetwork(net);
+              }}
+              className="w-full p-2 border rounded-lg text-sm text-[#111d4a] bg-white focus:outline-none focus:ring-2 focus:ring-[#007fff]/30"
+            >
+              {NETWORKS.map((n) => (
+                <option key={n.chainId} value={n.chainId}>
+                  {n.name} (chainId: {n.chainId})
+                </option>
+              ))}
+            </select>
+
             {/* To Address */}
             <div className="space-y-2">
               <Label htmlFor="tx-to" className="text-[#111d4a]">To Address</Label>
@@ -202,23 +219,6 @@ export function SignMessage({ wallet }: Props) {
                   onChange={(e) => setTxGasLimit(e.target.value)}
                   className="rounded-xl"
                 />
-              </div>
-            </div>
-
-            {/* Chain ID */}
-            <div className="space-y-2">
-              <Label htmlFor="tx-chain" className="text-[#111d4a]">Chain ID</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="tx-chain"
-                  type="number"
-                  value={txChainId}
-                  onChange={(e) => setTxChainId(e.target.value)}
-                  className="rounded-xl w-24"
-                />
-                <Badge variant="secondary" className="text-xs rounded-full">
-                  {txChainId === "1" ? "Ethereum Mainnet" : txChainId === "11155111" ? "Sepolia" : `Chain ${txChainId}`}
-                </Badge>
               </div>
             </div>
 
@@ -270,6 +270,9 @@ export function SignMessage({ wallet }: Props) {
                 <code className="block rounded-xl bg-[#f8f9fa] ring-1 ring-[#111d4a]/10 px-3 py-2 text-xs font-mono break-all text-[#111d4a]">
                   {txSignature}
                 </code>
+                <p className="text-xs text-[#99a1af]">
+                  Network: {selectedNetwork.name} (chainId: {selectedNetwork.chainId})
+                </p>
                 <div className="flex items-center gap-2 p-2 rounded-full bg-[#f0f7ff] ring-1 ring-[#007fff]/10 w-fit">
                   <span className="text-[10px] text-[#007fff] font-medium">
                     Signed but NOT broadcast — you control when to submit

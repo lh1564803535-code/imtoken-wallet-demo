@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Sparkles, Send, ArrowRight } from "lucide-react";
+import { parsePurchaseIntent, isPurchaseQuery } from "@/components/bitrefill/BitrefillIntent";
 import type { WalletData } from "@/lib/tcx";
 
 interface Props {
@@ -20,8 +21,8 @@ const SUGGESTIONS = [
   "Show my ETH address",
   "Prove I own all chains",
   "Sign a message",
-  "Export my keystore",
-  "Copy all addresses",
+  "Buy $50 Amazon gift card",
+  "Show my gift cards",
 ];
 
 function parseIntent(input: string, hasWallet: boolean): IntentResult {
@@ -87,14 +88,42 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
   if (lower.match(/help|what can you|how/)) {
     return {
       type: "info",
-      message: "I can help you: show addresses, copy them, prove cross-chain ownership, sign messages, export your keystore, or navigate between tabs. Try saying \"Show my ETH address\" or \"Prove I own all chains\"!",
+      message: "I can help you: show addresses, copy them, prove cross-chain ownership, sign messages, export your keystore, buy gift cards, or navigate between tabs. Try saying \"Show my ETH address\" or \"Buy $50 Amazon gift card\"!",
+    };
+  }
+
+  // Gift card vault
+  if (lower.match(/my.*gift\s*card|my.*card|show.*vault|我的.*卡/)) {
+    return { type: "navigate", message: "Opening your gift card vault.", action: "show-vault" };
+  }
+
+  // Shop / browse
+  if (lower.match(/shop|store|browse|gift\s*card|商店|礼品/)) {
+    return { type: "navigate", message: "Opening the gift card shop.", action: "show-shop" };
+  }
+
+  // Purchase intent (checked after all existing commands)
+  if (isPurchaseQuery(lower)) {
+    const intent = parsePurchaseIntent(input);
+    if (intent) {
+      const denomStr = intent.denomination ? ` ${intent.currency === "CNY" ? "¥" : "$"}${intent.denomination}` : "";
+      return {
+        type: "navigate",
+        message: `Looking for${denomStr} ${intent.productType} gift card... Opening shop.`,
+        action: "purchase",
+      };
+    }
+    return {
+      type: "navigate",
+      message: "Opening the gift card shop for you.",
+      action: "show-shop",
     };
   }
 
   // Fallback
   return {
     type: "info",
-    message: "I can help with: showing addresses, copying them, proving ownership, signing messages, and exporting your keystore. Try one of the suggestions below!",
+    message: "I can help with: showing addresses, proving ownership, signing messages, exporting keystore, or buying gift cards. Try one of the suggestions below!",
   };
 }
 
@@ -136,6 +165,11 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
           break;
         case "navigate-import":
           onNavigate("import");
+          break;
+        case "purchase":
+        case "show-shop":
+        case "show-vault":
+          onAction(result.action);
           break;
       }
     }
@@ -232,6 +266,11 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                           break;
                         case "navigate-import":
                           onNavigate("import");
+                          break;
+                        case "purchase":
+                        case "show-shop":
+                        case "show-vault":
+                          onAction(result.action);
                           break;
                       }
                     }

@@ -299,6 +299,10 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
               >
                 {allCopied ? "✓ Copied All Addresses" : "Copy All Addresses"}
               </button>
+
+              <p className="text-xs text-[#99a1af] mt-2">
+                当前网络：Ethereum Mainnet (chainId: 1)
+              </p>
             </div>
           )}
 
