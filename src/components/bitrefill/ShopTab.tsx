@@ -18,9 +18,10 @@ type ShopView = "catalog" | "vault" | "detail" | "result";
 interface Props {
   wallet: WalletData | null;
   addresses: ChainAddress[];
+  onNavigate?: (tab: string) => void;
 }
 
-export function ShopTab({ wallet, addresses }: Props) {
+export function ShopTab({ wallet, addresses, onNavigate }: Props) {
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedProduct, setSelectedProduct] = useState<BitrefillProduct | null>(null);
   const [invoice, setInvoice] = useState<BitrefillInvoice | null>(null);
@@ -200,10 +201,19 @@ export function ShopTab({ wallet, addresses }: Props) {
 
       {/* No wallet prompt */}
       {!wallet && view !== "vault" && (
-        <div className="rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 p-4 text-center">
-          <p className="text-xs text-[#007fff]">
-            Create or import a wallet first to purchase gift cards
-          </p>
+        <div className="rounded-xl ring-2 ring-[#007fff]/20 bg-[#f0f7ff] p-6 text-center space-y-3">
+          <div className="w-12 h-12 rounded-full bg-[#007fff]/10 flex items-center justify-center mx-auto">
+            <ShoppingBag className="h-6 w-6 text-[#007fff]" />
+          </div>
+          <p className="text-sm font-medium text-[#111d4a]">Create a wallet to start shopping</p>
+          <p className="text-xs text-[#99a1af]">You need a wallet to sign payment transactions</p>
+          <button
+            onClick={() => onNavigate?.("create")}
+            className="px-6 py-2.5 rounded-full bg-[#007fff] text-white text-sm font-medium hover:bg-[#006cd9] transition-colors"
+            style={{ boxShadow: "0 4px 14px 0 color-mix(in srgb, #007fff 20%, transparent)" }}
+          >
+            Create Wallet Now
+          </button>
         </div>
       )}
     </div>

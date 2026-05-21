@@ -213,7 +213,7 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="shop">
-            <ShopTab wallet={wallet} addresses={chainAddresses} />
+            <ShopTab wallet={wallet} addresses={chainAddresses} onNavigate={handleNavigate} />
           </TabsContent>
         </Tabs>
       </main>
