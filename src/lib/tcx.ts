@@ -261,7 +261,7 @@ export async function signTransaction(
       nonce: "0x0",
       gasPrice: "0x4a817c800", // 20 Gwei
       gasLimit: "0x" + parseInt(params.gasLimit).toString(16),
-      to: params.to,
+      to: params.to.toLowerCase(),
       value: valueHex,
       data: "0x",
       chainId: resolvedChainId,
@@ -272,7 +272,7 @@ export async function signTransaction(
     const { sign_tx } = await import("@consenlabs/tcx-wasm");
     const resultStr = sign_tx(JSON.stringify(txInput));
     const result = JSON.parse(resultStr);
-    return result.signature || result.signedTx || result.rawTx || resultStr;
+    return result.signature || result.signedTx || result.rawTx || JSON.stringify(result);
   } catch (e: any) {
     throw new Error(e.message || "Transaction signing failed");
   }

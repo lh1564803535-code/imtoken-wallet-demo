@@ -11,16 +11,18 @@ function generateId(): string {
 }
 
 function generateMockAddress(chain: string): string {
-  const hex = () => Math.random().toString(16).slice(2, 10);
+  const hexChars = "0123456789abcdef";
+  const randomHex = (len: number) =>
+    Array.from({ length: len }, () => hexChars[Math.floor(Math.random() * 16)]).join("");
   switch (chain) {
     case "ETHEREUM":
-      return "0x" + hex() + hex() + hex() + hex() + hex().slice(0, 8);
+      return "0x" + randomHex(40);
     case "BITCOIN":
-      return "bc1q" + hex() + hex() + hex() + hex().slice(0, 6);
+      return "bc1q" + randomHex(32);
     case "TRON":
-      return "T" + hex().toUpperCase() + hex().toUpperCase() + hex().toUpperCase().slice(0, 7);
+      return "T" + randomHex(33).toUpperCase();
     default:
-      return "0x" + hex() + hex() + hex() + hex() + hex().slice(0, 8);
+      return "0x" + randomHex(40);
   }
 }
 
