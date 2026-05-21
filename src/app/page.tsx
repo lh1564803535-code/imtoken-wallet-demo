@@ -2,17 +2,42 @@
 
 import { useState } from "react";
 import { CreateWallet } from "@/components/create-wallet";
+import { ImportWallet } from "@/components/import-wallet";
 import { SignMessage } from "@/components/sign-message";
 import { WalletSecurity } from "@/components/wallet-security";
-import { WalletProfile } from "@/components/wallet-profile";
+import { AIIntent } from "@/components/ai-intent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, PenLine, Shield, Link2, Lock } from "lucide-react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Wallet, PenLine, Shield, Download, Lock } from "lucide-react";
 import type { WalletData } from "@/lib/tcx";
 
 export default function Home() {
   const [wallet, setWallet] = useState<WalletData | null>(null);
+  const [activeTab, setActiveTab] = useState("create");
+
+  const handleNavigate = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const handleAIAction = (action: string) => {
+    switch (action) {
+      case "show-eth":
+      case "show-btc":
+      case "show-tron":
+      case "show-all":
+        // Navigate to create tab where addresses are shown
+        if (wallet) setActiveTab("create");
+        break;
+      case "copy-all":
+        // Trigger copy in create tab
+        if (wallet) setActiveTab("create");
+        break;
+      case "prove":
+        // Navigate to create tab for proof
+        if (wallet) setActiveTab("create");
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#f0f7ff] to-white">
@@ -73,71 +98,48 @@ export default function Home() {
               10th Anniversary
             </Badge>
           </div>
-          <div className="hidden sm:block">
-            <ConnectButton
-              chainStatus="icon"
-              showBalance={false}
-              accountStatus="address"
-            />
-          </div>
         </div>
 
         {/* Hero 内容 */}
         <div className="relative mx-auto max-w-5xl px-6 py-14 md:py-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-medium tracking-wide mb-4">
-            🎂 Birthday celebration edition
+            🔐 AI-Native Zero-Trust Wallet
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-none drop-shadow-lg">
-            十周年快乐
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
+            Your Digital World,<br />Under Your Control
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-white/90 max-w-lg leading-relaxed">
-            Your Digital World, Under Your Control
+          <p className="mt-4 text-lg md:text-xl text-white/90 max-w-lg leading-relaxed font-medium">
+            1 Seed · 5 Chains · 0 Servers · Pure Cryptography
           </p>
 
-          {/* 祝福语卡片 */}
+          {/* 核心价值主张 */}
           <div className="mt-6 inline-flex flex-col gap-1 px-6 py-4 rounded-3xl bg-white/15 border border-white/20 backdrop-blur-sm">
-            <span className="text-xl font-extrabold tracking-tight">Happy Birthday, imToken! 🎉</span>
-            <span className="text-sm text-white/85">愿你的下一个十年更精彩</span>
+            <span className="text-base font-bold tracking-tight">Happy Birthday, imToken! 🎂</span>
+            <span className="text-sm text-white/85">十年守护用户主权，下一个十年更精彩</span>
           </div>
 
           <p className="mt-5 text-sm text-white/60 max-w-lg leading-relaxed">
-            Building a smoother crypto experience with trust, clarity, and a little birthday magic.
+            All wallet operations run locally in your browser via WebAssembly. No servers, no third parties, no trust required.
           </p>
         </div>
 
         {/* 生日蛋糕 */}
         <div className="animate-cake-rise absolute left-8 bottom-0 w-[280px] z-10">
-          {/* 蛋糕盘 */}
           <div className="absolute left-[-14px] right-[-14px] bottom-[-18px] h-[28px] rounded-full bg-gradient-to-b from-white/95 to-[#dcf2ff]/95 shadow-lg" />
-          {/* 蛋糕主体 */}
           <div className="relative h-[120px] rounded-t-3xl rounded-b-[28px] bg-gradient-to-b from-[#7de7ff] via-[#1fb8ff] to-[#007fff] border border-white/30 overflow-hidden">
-            {/* 条纹装饰 */}
             <div className="absolute inset-0 opacity-30" style={{ background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0 10px, transparent 10px 24px)' }} />
-            {/* 龙图标 */}
             <div className="absolute left-1/2 top-3 -translate-x-1/2 w-16 h-16 rounded-2xl bg-gradient-to-b from-white/95 to-[#f0fbff]/90 shadow-lg flex items-center justify-center">
               <img src="/favicon.svg" alt="" className="w-12 h-12" />
             </div>
-            {/* 火焰 */}
             <div className="cake-flame" />
-            {/* 蜡烛棒 */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-5 rounded-full bg-gradient-to-b from-[#d7edf7] to-[#93bdd1]" />
           </div>
-          {/* 奶油层 */}
           <div className="absolute left-4 right-4 top-[-10px] h-[28px] rounded-full bg-gradient-to-b from-white/98 to-[#e9faff]/88 shadow-md" />
         </div>
       </header>
 
-      {/* Mobile Connect Button */}
-      <div className="sm:hidden flex justify-center py-3 border-b border-[#e0e3e8] bg-white">
-        <ConnectButton
-          chainStatus="icon"
-          showBalance={false}
-          accountStatus="address"
-        />
-      </div>
-
       {/* Main Content */}
-      <main className="flex-1 mx-auto w-full max-w-4xl px-4 -mt-4 relative z-10 pb-12">
+      <main className="flex-1 mx-auto w-full max-w-2xl px-4 -mt-4 relative z-10 pb-12">
         {/* Zero Trust Architecture Banner */}
         <div className="mb-4 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 px-4 py-3 flex items-start gap-3">
           <Lock className="h-4 w-4 text-[#007fff] mt-0.5 flex-shrink-0" />
@@ -148,30 +150,36 @@ export default function Home() {
             <span>✅ Open source & auditable</span>
           </div>
         </div>
-        <Tabs defaultValue="create" className="w-full">
-          <div className="sticky top-0 z-20 bg-gradient-to-b from-[#f0f7ff] via-[#f0f7ff] to-transparent pt-2 pb-3">
-            <TabsList className="grid w-full grid-cols-4 shadow-sm rounded-full">
-              <TabsTrigger value="create" className="gap-1.5 rounded-full">
-                <Wallet className="h-4 w-4" />
-                <span className="hidden sm:inline">Create</span>
-              </TabsTrigger>
-              <TabsTrigger value="sign" className="gap-1.5 rounded-full">
-                <PenLine className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign</span>
-              </TabsTrigger>
-              <TabsTrigger value="security" className="gap-1.5 rounded-full">
-                <Shield className="h-4 w-4" />
-                <span className="hidden sm:inline">Security</span>
-              </TabsTrigger>
-              <TabsTrigger value="connect" className="gap-1.5 rounded-full">
-                <Link2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Connect</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+
+        {/* AI Intent Assistant */}
+        <AIIntent wallet={wallet} onNavigate={handleNavigate} onAction={handleAIAction} />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6 shadow-sm rounded-full">
+            <TabsTrigger value="create" className="gap-1.5 rounded-full">
+              <Wallet className="h-4 w-4" />
+              <span className="hidden sm:inline">Create</span>
+            </TabsTrigger>
+            <TabsTrigger value="import" className="gap-1.5 rounded-full">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Import</span>
+            </TabsTrigger>
+            <TabsTrigger value="sign" className="gap-1.5 rounded-full">
+              <PenLine className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="gap-1.5 rounded-full">
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Security</span>
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="create">
             <CreateWallet onWalletCreated={setWallet} wallet={wallet} />
+          </TabsContent>
+
+          <TabsContent value="import">
+            <ImportWallet onWalletImported={setWallet} wallet={wallet} />
           </TabsContent>
 
           <TabsContent value="sign">
@@ -180,10 +188,6 @@ export default function Home() {
 
           <TabsContent value="security">
             <WalletSecurity wallet={wallet} />
-          </TabsContent>
-
-          <TabsContent value="connect">
-            <WalletProfile />
           </TabsContent>
         </Tabs>
       </main>
@@ -201,8 +205,7 @@ export default function Home() {
           </span>
         </div>
         <p className="text-xs text-[#99a1af]/80">
-          Powered by Token Core (tcx-wasm) · Your Digital World, Under Your
-          Control
+          Powered by Token Core (tcx-wasm) · AI-Native Zero-Trust Wallet · Your Digital World, Under Your Control
         </p>
       </footer>
     </div>

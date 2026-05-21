@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { WalletProvider } from "@/components/wallet-provider";
-import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,7 +30,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-white">
-        <WalletProvider>{children}</WalletProvider>
+        {children}
       </body>
     </html>
   );

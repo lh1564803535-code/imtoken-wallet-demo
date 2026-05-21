@@ -173,6 +173,19 @@ export async function deriveMultiChainAddresses(
   return results;
 }
 
+export async function importWallet(
+  mnemonic: string,
+  password: string
+): Promise<{ keystoreJson: string; address: string }> {
+  await ensureInit();
+  // Token Core's create_keystore accepts { password, mnemonic } to import existing mnemonic
+  const keystoreJson = create_keystore(
+    JSON.stringify({ password, mnemonic: mnemonic.trim() })
+  );
+  const address = await deriveAddress(keystoreJson, password);
+  return { keystoreJson, address };
+}
+
 export async function signOwnershipProof(
   keystoreJson: string,
   password: string,
