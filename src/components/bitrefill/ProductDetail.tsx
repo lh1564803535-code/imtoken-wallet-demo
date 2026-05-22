@@ -10,6 +10,7 @@ interface Props {
   onBack: () => void;
   onBuy: (denomination: number, chain: string) => void;
   disabled: boolean;
+  defaultChain?: string;
 }
 
 const CHAINS = [
@@ -18,9 +19,9 @@ const CHAINS = [
   { value: "TRON", label: "TRX", icon: "◎" },
 ];
 
-export function ProductDetail({ product, onBack, onBuy, disabled }: Props) {
+export function ProductDetail({ product, onBack, onBuy, disabled, defaultChain = "ETHEREUM" }: Props) {
   const [selectedDenom, setSelectedDenom] = useState(product.denominations[0]);
-  const [selectedChain, setSelectedChain] = useState("ETHEREUM");
+  const [selectedChain, setSelectedChain] = useState(defaultChain);
 
   return (
     <div className="space-y-4 animate-fade-in-up">

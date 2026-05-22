@@ -15,6 +15,7 @@ interface IntentResult {
   type: "success" | "info" | "navigate" | "error";
   message: string;
   action?: string;
+  payload?: string;
 }
 
 const SUGGESTIONS = [
@@ -111,6 +112,7 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
         type: "navigate",
         message: `Looking for${denomStr} ${intent.productType} gift card... Opening shop.`,
         action: "purchase",
+        payload: JSON.stringify(intent),
       };
     }
     return {
@@ -167,6 +169,9 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
           onNavigate("import");
           break;
         case "purchase":
+          onAction("purchase", result.payload);
+          onNavigate("shop");
+          break;
         case "show-shop":
         case "show-vault":
           onNavigate("shop");
@@ -268,6 +273,9 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                           onNavigate("import");
                           break;
                         case "purchase":
+                          onAction("purchase", result.payload);
+                          onNavigate("shop");
+                          break;
                         case "show-shop":
                         case "show-vault":
                           onNavigate("shop");

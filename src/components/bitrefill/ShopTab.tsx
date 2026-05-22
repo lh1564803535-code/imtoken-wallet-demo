@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ShoppingBag, CreditCard } from "lucide-react";
 import { GiftCardShop } from "./GiftCardShop";
 import { ProductDetail } from "./ProductDetail";
@@ -10,8 +10,9 @@ import { GiftCardVault } from "./GiftCardVault";
 import { BalanceDashboard } from "./BalanceDashboard";
 import { useBitrefill } from "@/hooks/useBitrefill";
 import { useGiftCardVault } from "@/hooks/useGiftCardVault";
+import { searchProductsByIntent } from "@/lib/bitrefill-api";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
-import type { BitrefillProduct, BitrefillInvoice, CatalogFilters } from "@/types/bitrefill";
+import type { BitrefillProduct, BitrefillInvoice, CatalogFilters, PurchaseIntent } from "@/types/bitrefill";
 
 type ShopView = "catalog" | "vault" | "detail" | "result";
 
@@ -19,15 +20,35 @@ interface Props {
   wallet: WalletData | null;
   addresses: ChainAddress[];
   onNavigate?: (tab: string) => void;
+  purchaseIntent?: PurchaseIntent | null;
 }
 
-export function ShopTab({ wallet, addresses, onNavigate }: Props) {
+const LAST_CHAIN_KEY = "imtoken_last_chain";
+
+function getLastChain(): string {
+  try {
+    return localStorage.getItem(LAST_CHAIN_KEY) || "ETHEREUM";
+  } catch {
+    return "ETHEREUM";
+  }
+}
+
+function saveLastChain(chain: string) {
+  try {
+    localStorage.setItem(LAST_CHAIN_KEY, chain);
+  } catch {
+    // ignore
+  }
+}
+
+export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props) {
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedProduct, setSelectedProduct] = useState<BitrefillProduct | null>(null);
   const [invoice, setInvoice] = useState<BitrefillInvoice | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [signing, setSigning] = useState(false);
   const [signError, setSignError] = useState("");
+  const [defaultChain, setDefaultChain] = useState("ETHEREUM");
   const [resultData, setResultData] = useState<{
     productName: string;
     denomination: number;
@@ -38,6 +59,21 @@ export function ShopTab({ wallet, addresses, onNavigate }: Props) {
 
   const { products, loading, error, fetchProducts, makeInvoice, completePayment } = useBitrefill();
   const vault = useGiftCardVault(wallet?.password);
+
+  // Load last used chain on mount
+  useEffect(() => {
+    setDefaultChain(getLastChain());
+  }, []);
+
+  // Handle purchase intent from AI
+  useEffect(() => {
+    if (!purchaseIntent || !wallet) return;
+    const results = searchProductsByIntent(purchaseIntent.productType, purchaseIntent.denomination);
+    if (results.length > 0) {
+      setSelectedProduct(results[0]);
+      setView("detail");
+    }
+  }, [purchaseIntent, wallet]);
 
   const handleFetch = useCallback((filters: CatalogFilters) => {
     fetchProducts(filters);
@@ -77,6 +113,10 @@ export function ShopTab({ wallet, addresses, onNavigate }: Props) {
 
       // Simulate payment success
       const { code } = await completePayment(invoice);
+
+      // Save last used chain
+      saveLastChain(invoice.payment.chain);
+      setDefaultChain(invoice.payment.chain);
 
       // Store in vault
       await vault.addCard({
@@ -120,7 +160,7 @@ export function ShopTab({ wallet, addresses, onNavigate }: Props) {
   return (
     <div className="space-y-4">
       {/* Balance Dashboard */}
-      <BalanceDashboard addresses={addresses} giftCardTotals={vault.totalByDenomination} />
+      <BalanceDashboard wallet={wallet} addresses={addresses} giftCardTotals={vault.totalByDenomination} />
 
       {/* View toggle */}
       <div className="flex gap-2 mb-2">
@@ -165,6 +205,7 @@ export function ShopTab({ wallet, addresses, onNavigate }: Props) {
           onBack={() => setView("catalog")}
           onBuy={handleBuy}
           disabled={!wallet}
+          defaultChain={defaultChain}
         />
       )}
 

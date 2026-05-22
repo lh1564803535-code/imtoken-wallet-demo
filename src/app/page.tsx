@@ -11,11 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Wallet, PenLine, Shield, Download, Lock, ShoppingBag } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
+import type { PurchaseIntent } from "@/types/bitrefill";
 
 export default function Home() {
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [activeTab, setActiveTab] = useState("create");
   const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
+  const [purchaseIntent, setPurchaseIntent] = useState<PurchaseIntent | null>(null);
 
   const handleNavigate = (tab: string) => {
     setActiveTab(tab);
@@ -36,7 +38,7 @@ export default function Home() {
     });
   };
 
-  const handleAIAction = (action: string) => {
+  const handleAIAction = (action: string, payload?: string) => {
     switch (action) {
       case "show-eth":
       case "show-btc":
@@ -51,6 +53,16 @@ export default function Home() {
         if (wallet) setActiveTab("create");
         break;
       case "purchase":
+        if (payload) {
+          try {
+            const intent = JSON.parse(payload);
+            setPurchaseIntent(intent);
+          } catch {
+            // ignore parse error
+          }
+        }
+        setActiveTab("shop");
+        break;
       case "show-shop":
         setActiveTab("shop");
         break;
@@ -213,7 +225,7 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="shop">
-            <ShopTab wallet={wallet} addresses={chainAddresses} onNavigate={handleNavigate} />
+            <ShopTab wallet={wallet} addresses={chainAddresses} onNavigate={handleNavigate} purchaseIntent={purchaseIntent} />
           </TabsContent>
         </Tabs>
       </main>
