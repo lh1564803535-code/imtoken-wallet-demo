@@ -1,20 +1,19 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { ShoppingBag, CreditCard, Globe } from "lucide-react";
+import { ShoppingBag, CreditCard } from "lucide-react";
 import { GiftCardShop } from "./GiftCardShop";
 import { ProductDetail } from "./ProductDetail";
 import { PaymentConfirm } from "./PaymentConfirm";
 import { PaymentResult } from "./PaymentResult";
 import { GiftCardVault } from "./GiftCardVault";
 import { BalanceDashboard } from "./BalanceDashboard";
-import { BitrefillWidget } from "./BitrefillWidget";
 import { useBitrefill } from "@/hooks/useBitrefill";
 import { useGiftCardVault } from "@/hooks/useGiftCardVault";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 import type { BitrefillProduct, BitrefillInvoice, CatalogFilters, PurchaseIntent } from "@/types/bitrefill";
 
-type ShopView = "catalog" | "vault" | "detail" | "result" | "bitrefill-store";
+type ShopView = "catalog" | "vault" | "detail" | "result";
 
 interface Props {
   wallet: WalletData | null;
@@ -42,7 +41,7 @@ function saveLastChain(chain: string) {
 }
 
 export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props) {
-  const [view, setView] = useState<ShopView>("bitrefill-store");
+  const [view, setView] = useState<ShopView>("catalog");
   const [selectedProduct, setSelectedProduct] = useState<BitrefillProduct | null>(null);
   const [invoice, setInvoice] = useState<BitrefillInvoice | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -68,8 +67,8 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
   // Handle purchase intent from AI
   useEffect(() => {
     if (!purchaseIntent) return;
-    // When AI triggers a purchase, open the Bitrefill store
-    setView("bitrefill-store");
+    // When AI triggers a purchase, open the catalog
+    setView("catalog");
   }, [purchaseIntent]);
 
   const handleFetch = useCallback((filters: CatalogFilters) => {
@@ -162,17 +161,6 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
       {/* View toggle */}
       <div className="flex gap-2 mb-2">
         <button
-          onClick={() => setView("bitrefill-store")}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all ${
-            view === "bitrefill-store"
-              ? "bg-emerald-500 text-white"
-              : "bg-[#f8f9fa] text-[#111d4a] ring-1 ring-emerald-200 hover:ring-emerald-400"
-          }`}
-        >
-          <Globe className="h-3.5 w-3.5" />
-          Bitrefill Store
-        </button>
-        <button
           onClick={() => { setView("catalog"); setSelectedProduct(null); }}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all ${
             view === "catalog" || view === "detail"
@@ -181,7 +169,7 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
           }`}
         >
           <ShoppingBag className="h-3.5 w-3.5" />
-          Demo Catalog
+          Gift Card Store
         </button>
         <button
           onClick={() => setView("vault")}
@@ -197,19 +185,6 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
       </div>
 
       {/* Views */}
-      {view === "bitrefill-store" && (
-        <BitrefillWidget
-          paymentMethod="ethereum"
-          theme="light"
-          onInvoiceCreated={(data) => {
-            console.log("Bitrefill invoice created:", data);
-          }}
-          onInvoiceComplete={(data) => {
-            console.log("Bitrefill invoice complete:", data);
-          }}
-        />
-      )}
-
       {view === "catalog" && (
         <GiftCardShop
           products={products}

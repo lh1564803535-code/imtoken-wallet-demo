@@ -6,8 +6,59 @@ import type {
 } from "@/types/bitrefill";
 import { MOCK_PRODUCTS, MOCK_EXCHANGE_RATES, CNY_TO_USD } from "./bitrefill-mock-data";
 
-// Mock data - used as fallback if Bitrefill Widget fails to load
-// Real products available via Bitrefill Embed Widget (iframe)
+const API_BASE = '/api/bitrefill';
+
+// ============ API Helpers ============
+
+async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T | null> {
+  try {
+    const url = new URL(`${window.location.origin}${API_BASE}/${path}`);
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    }
+    const res = await fetch(url.toString());
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? json;
+  } catch {
+    return null;
+  }
+}
+
+async function apiPost<T>(path: string, body: any): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_BASE}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? json;
+  } catch {
+    return null;
+  }
+}
+
+// ============ Type Mapping ============
+
+function mapApiProduct(api: any): BitrefillProduct {
+  return {
+    id: api.id,
+    name: api.name,
+    description: api.description || '',
+    country: api.country || 'US',
+    category: api.category || 'other',
+    currency: api.currency || 'USD',
+    denominations: api.packages?.map((p: any) => p.value) || [25, 50, 100],
+    supportedCrypto: ['ETH', 'BTC', 'USDT'],
+    discount: api.discount || 0,
+    inStock: api.in_stock !== false,
+    imageUrl: api.image || undefined,
+  };
+}
+
+// ============ Mock Helpers ============
 
 function generateId(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -64,36 +115,56 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function getProducts(
-  filters: CatalogFilters
-): Promise<BitrefillResponse<BitrefillProduct[]>> {
-  await delay(300 + Math.random() * 200);
-
-  let products = [...MOCK_PRODUCTS];
+function applyFilters(products: BitrefillProduct[], filters: CatalogFilters): BitrefillProduct[] {
+  let result = [...products];
 
   if (filters.country && filters.country !== "ALL") {
-    products = products.filter((p) => p.country === filters.country);
+    result = result.filter((p) => p.country === filters.country);
   }
 
   if (filters.category && filters.category !== "all") {
-    products = products.filter((p) => p.category === filters.category);
+    result = result.filter((p) => p.category === filters.category);
   }
 
   if (filters.search && filters.search.trim().length > 0) {
     const q = filters.search.toLowerCase();
-    products = products.filter(
+    result = result.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q)
     );
   }
 
-  return { success: true, data: products };
+  return result;
+}
+
+// ============ Real API + Mock Fallback ============
+
+export async function getProducts(
+  filters: CatalogFilters
+): Promise<BitrefillResponse<BitrefillProduct[]>> {
+  // Try real API first
+  const realProducts = await apiGet<any[]>('products', { limit: '30' });
+  if (realProducts && realProducts.length > 0) {
+    const mapped = realProducts.map(mapApiProduct);
+    return { success: true, data: applyFilters(mapped, filters) };
+  }
+
+  // Fallback to mock
+  await delay(300 + Math.random() * 200);
+  return { success: true, data: applyFilters(MOCK_PRODUCTS, filters) };
 }
 
 export async function getProductById(
   id: string
 ): Promise<BitrefillResponse<BitrefillProduct>> {
+  // Try real API first
+  const realProduct = await apiGet<any>(`products/${id}`);
+  if (realProduct) {
+    return { success: true, data: mapApiProduct(realProduct) };
+  }
+
+  // Fallback to mock
   await delay(200);
   const product = MOCK_PRODUCTS.find((p) => p.id === id);
   if (!product) {
@@ -110,6 +181,40 @@ export async function createInvoice(
   denomination: number,
   chain: string
 ): Promise<BitrefillResponse<BitrefillInvoice>> {
+  // Try real API first (use test product for demo)
+  const useTestProduct = productId === 'test-gift-card-code' || productId === 'test-gift-card-link';
+  const realInvoice = await apiPost<any>('invoices', {
+    products: [{
+      product_id: useTestProduct ? productId : 'test-gift-card-code',
+      value: denomination,
+      quantity: 1,
+    }],
+    payment_method: 'balance',
+    auto_pay: true,
+  });
+
+  if (realInvoice && realInvoice.id) {
+    return {
+      success: true,
+      data: {
+        id: realInvoice.id,
+        productId,
+        productName: realInvoice.orders?.[0]?.product_name || 'Gift Card',
+        denomination,
+        currency: 'USD',
+        payment: {
+          address: realInvoice.payment_address || '',
+          amount: realInvoice.payment_amount || '0',
+          chain,
+          symbol: cryptoSymbolForChain(chain),
+        },
+        status: realInvoice.status || 'pending',
+        createdAt: realInvoice.created_at || new Date().toISOString(),
+      },
+    };
+  }
+
+  // Fallback to mock
   await delay(500 + Math.random() * 300);
 
   const product = MOCK_PRODUCTS.find((p) => p.id === productId);
@@ -142,6 +247,18 @@ export async function createInvoice(
 export async function simulatePaymentSuccess(
   invoice: BitrefillInvoice
 ): Promise<{ code: string; pin?: string }> {
+  // Try real API first (get redemption code for test product)
+  if (invoice.id) {
+    const order = await apiGet<any>(`orders/${invoice.id}`);
+    if (order && order.redemption_info) {
+      return {
+        code: order.redemption_info.code || 'TEST-CODE-1234',
+        pin: order.redemption_info.pin,
+      };
+    }
+  }
+
+  // Fallback to mock
   await delay(2000);
   return { code: generateGiftCardCode() };
 }
@@ -150,6 +267,7 @@ export function searchProductsByIntent(
   query: string,
   denomination?: number
 ): BitrefillProduct[] {
+  // AI intent search always uses mock (client-side, fast)
   const q = query.toLowerCase();
   let results = MOCK_PRODUCTS.filter(
     (p) =>
