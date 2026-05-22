@@ -1,6 +1,6 @@
 # 🎂 imToken 10th Anniversary — AI Crypto Spending Wallet
 
-> 一个助记词，五条链，AI 对话式购买礼品卡 — 全部在浏览器本地完成，零服务器。
+> 一个助记词，五条链，AI 对话式购买礼品卡 — 真实 Bitrefill API 集成，浏览器本地完成签名。
 
 **🌐 在线体验**：https://imtoken-wallet-demo.vercel.app  
 **📖 使用指南**：https://imtoken-wallet-demo.vercel.app/guide.md  
@@ -19,17 +19,20 @@
 
 ## ✨ 核心亮点
 
-### 1. AI 对话式购买
+### 1. 真实 Bitrefill API 集成
+接入 Bitrefill Personal API（`api.bitrefill.com/v2`），通过 Vercel Edge Function 代理解决 CORS。支持商品浏览、搜索、下单、获取券码全流程。无 API Key 时自动降级到 mock 数据。
+
+### 2. AI 对话式购买
 输入 "帮我买 50 美元 Amazon 礼品卡" → AI 解析意图 → 搜索商品 → 确认支付 → Token Core 签名 → 获得券码
 
-### 2. 真实 Token Core 集成
+### 3. 真实 Token Core 集成
 不是 mock，是真正调用 `@consenlabs/tcx-wasm`：创建钱包、派生 5 链地址、签名消息、签名交易
 
-### 3. 防盲签安全设计
+### 4. 防盲签安全设计
 支付确认前强制风险提示 + 用户确认 checkbox，展示完整交易参数
 
-### 4. 完整消费闭环
-浏览商品 → AI 选品 → 签名支付 → 模拟广播 → 礼品卡加密存储 → 余额聚合展示
+### 5. 完整消费闭环
+浏览 Bitrefill 真实商品 → AI 选品 → 签名支付 → 获取真实券码 → 礼品卡加密存储 → 余额聚合展示
 
 ---
 
@@ -60,7 +63,8 @@
 样式：Tailwind CSS 4 + shadcn/ui + lucide-react
 钱包内核：@consenlabs/tcx-wasm v0.9.1（Token Core WebAssembly）
 加密：Web Crypto API (AES-GCM) + ethers.js v6
-部署：Vercel（纯静态，零 SSR）
+API 集成：Bitrefill Personal API v2 + Vercel Edge Function 代理
+部署：Vercel（Edge Function + 静态页面）
 ```
 
 ---
@@ -92,6 +96,24 @@
 
 ---
 
+## 🔌 Bitrefill API 架构
+
+```
+浏览器 → Edge Function (/api/bitrefill/*) → Bitrefill API (api.bitrefill.com/v2)
+              ↓
+         Bearer Token 认证
+         路径白名单校验
+         10s 超时保护
+         状态码透传
+```
+
+- **认证**：Personal API Bearer Token（存储在 Vercel 环境变量中）
+- **CORS**：Edge Function 服务端代理，绕过浏览器跨域限制
+- **降级**：无 API Key 或 API 失败时自动切换到 mock 数据
+- **测试产品**：`test-gift-card-code` 免费购买，不扣余额，适合演示
+
+---
+
 ## 🚀 本地开发
 
 ```bash
@@ -109,7 +131,9 @@ npm run dev
 
 ```
 src/
-├── app/page.tsx              # 主页面（Hero + Tabs）
+├── app/
+│   ├── page.tsx              # 主页面（Hero + Tabs）
+│   └── api/bitrefill/[...path]/route.ts  # Bitrefill API 代理（Edge Function）
 ├── components/
 │   ├── create-wallet.tsx     # 创建钱包 + 5 链派生 + 跨链证明
 │   ├── import-wallet.tsx     # 助记词导入
@@ -119,6 +143,7 @@ src/
 │   └── bitrefill/            # Bitrefill 集成模块
 │       ├── ShopTab.tsx       # 商店主容器
 │       ├── GiftCardShop.tsx  # 产品目录 + 筛选
+│       ├── ProductCard.tsx   # 产品卡片（支持真实图片）
 │       ├── ProductDetail.tsx # 产品详情 + 购买
 │       ├── PaymentConfirm.tsx# 支付确认（防盲签）
 │       ├── PaymentResult.tsx # 支付成功 + 模拟广播
@@ -126,7 +151,8 @@ src/
 │       └── BalanceDashboard.tsx # 余额聚合
 ├── lib/
 │   ├── tcx.ts               # Token Core WASM 封装
-│   ├── bitrefill-api.ts     # Bitrefill API 客户端（mock）
+│   ├── bitrefill-api.ts     # Bitrefill API 客户端（真实 API + mock fallback）
+│   ├── bitrefill-mock-data.ts # Mock 商品数据（fallback）
 │   ├── gift-card-crypto.ts  # AES-GCM 加密
 │   └── networks.ts          # 网络配置
 └── hooks/
