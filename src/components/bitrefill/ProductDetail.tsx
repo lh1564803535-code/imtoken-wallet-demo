@@ -5,6 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import type { BitrefillProduct } from "@/types/bitrefill";
 
+const categoryEmoji: Record<string, string> = {
+  "e-commerce": "🛒",
+  food: "🍔",
+  gaming: "🎮",
+  "phone-topup": "📱",
+  entertainment: "🎬",
+  travel: "🚗",
+  other: "🎁",
+};
+
 interface Props {
   product: BitrefillProduct;
   onBack: () => void;
@@ -22,6 +32,9 @@ const CHAINS = [
 export function ProductDetail({ product, onBack, onBuy, disabled, defaultChain = "ETHEREUM" }: Props) {
   const [selectedDenom, setSelectedDenom] = useState(product.denominations[0]);
   const [selectedChain, setSelectedChain] = useState(defaultChain);
+  const [imgError, setImgError] = useState(false);
+  const emoji = categoryEmoji[product.category] || "🎁";
+  const showImage = product.imageUrl && !imgError;
 
   return (
     <div className="space-y-4 animate-fade-in-up">
@@ -37,8 +50,17 @@ export function ProductDetail({ product, onBack, onBuy, disabled, defaultChain =
       <div className="rounded-xl ring-1 ring-[#111d4a]/10 bg-white p-6" style={{ boxShadow: "0 2px 8px 0 color-mix(in srgb, #111d4a 4%, transparent)" }}>
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-[#f0f7ff] flex items-center justify-center text-2xl">
-            🎁
+          <div className="w-12 h-12 rounded-xl bg-[#f0f7ff] flex items-center justify-center text-2xl overflow-hidden">
+            {showImage ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-full object-contain"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              emoji
+            )}
           </div>
           <div>
             <h3 className="text-base font-semibold text-[#111d4a]">{product.name}</h3>

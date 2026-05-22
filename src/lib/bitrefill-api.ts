@@ -198,6 +198,7 @@ export async function createInvoice(
       success: true,
       data: {
         id: realInvoice.id,
+        orderId: realInvoice.orders?.[0]?.id,
         productId,
         productName: realInvoice.orders?.[0]?.product_name || 'Gift Card',
         denomination,
@@ -248,8 +249,10 @@ export async function simulatePaymentSuccess(
   invoice: BitrefillInvoice
 ): Promise<{ code: string; pin?: string }> {
   // Try real API first (get redemption code for test product)
-  if (invoice.id) {
-    const order = await apiGet<any>(`orders/${invoice.id}`);
+  // Official docs: use invoice.orders[0].id, not invoice.id
+  const orderId = invoice.orderId || invoice.id;
+  if (orderId) {
+    const order = await apiGet<any>(`orders/${orderId}`);
     if (order && order.redemption_info) {
       return {
         code: order.redemption_info.code || 'TEST-CODE-1234',

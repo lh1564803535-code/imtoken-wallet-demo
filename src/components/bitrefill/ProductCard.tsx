@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { BitrefillProduct } from "@/types/bitrefill";
 
@@ -19,9 +20,11 @@ const categoryEmoji: Record<string, string> = {
 };
 
 export function ProductCard({ product, onClick }: Props) {
+  const [imgError, setImgError] = useState(false);
   const minDenom = product.denominations[0];
   const maxDenom = product.denominations[product.denominations.length - 1];
   const emoji = categoryEmoji[product.category] || "🎁";
+  const showImage = product.imageUrl && !imgError;
 
   return (
     <button
@@ -30,8 +33,17 @@ export function ProductCard({ product, onClick }: Props) {
       style={{ boxShadow: "0 1px 4px 0 color-mix(in srgb, #111d4a 3%, transparent)" }}
     >
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#f0f7ff] flex items-center justify-center text-lg flex-shrink-0">
-          {emoji}
+        <div className="w-10 h-10 rounded-xl bg-[#f0f7ff] flex items-center justify-center text-lg flex-shrink-0 overflow-hidden">
+          {showImage ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-contain"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            emoji
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">

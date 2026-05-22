@@ -24,6 +24,7 @@ export type BitrefillCategory =
 
 export interface BitrefillInvoice {
   id: string;
+  orderId?: string;
   productId: string;
   productName: string;
   denomination: number;
