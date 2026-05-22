@@ -6,6 +6,9 @@ import type {
 } from "@/types/bitrefill";
 import { MOCK_PRODUCTS, MOCK_EXCHANGE_RATES, CNY_TO_USD } from "./bitrefill-mock-data";
 
+// Mock data - used as fallback if Bitrefill Widget fails to load
+// Real products available via Bitrefill Embed Widget (iframe)
+
 function generateId(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
@@ -57,7 +60,6 @@ function calculateCryptoAmount(
   return amount.toFixed(6);
 }
 
-// Simulate network delay
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
