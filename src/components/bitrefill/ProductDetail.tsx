@@ -30,7 +30,8 @@ const CHAINS = [
 ];
 
 export function ProductDetail({ product, onBack, onBuy, disabled, defaultChain = "ETHEREUM" }: Props) {
-  const [selectedDenom, setSelectedDenom] = useState(product.denominations[0]);
+  const denoms = product.denominations.filter(d => d > 0);
+  const [selectedDenom, setSelectedDenom] = useState(denoms[0] || 0);
   const [selectedChain, setSelectedChain] = useState(defaultChain);
   const [imgError, setImgError] = useState(false);
   const emoji = categoryEmoji[product.category] || "🎁";
@@ -77,7 +78,7 @@ export function ProductDetail({ product, onBack, onBuy, disabled, defaultChain =
         <div className="space-y-2 mb-4">
           <span className="text-xs font-medium text-[#111d4a]">Select Amount ({product.currency})</span>
           <div className="flex flex-wrap gap-2">
-            {product.denominations.map((d) => (
+            {denoms.map((d) => (
               <button
                 key={d}
                 onClick={() => setSelectedDenom(d)}

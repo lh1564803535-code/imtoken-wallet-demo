@@ -1,34 +1,38 @@
 import type { PurchaseIntent } from "@/types/bitrefill";
 
 const PURCHASE_PATTERNS: RegExp[] = [
-  // English: "buy $50 Amazon gift card", "get a $100 steam card"
   /(?:buy|purchase|get|want)\s+(?:a\s+)?(?:\$(\d+))\s+(.+?)(?:\s+gift\s*card|\s+card)?$/i,
-  // English: "buy 50 dollar Amazon card"
   /(?:buy|purchase|get|want)\s+(?:a\s+)?(\d+)\s*(?:dollar|usd|USD)\s+(.+?)(?:\s+gift\s*card|\s+card)?$/i,
-  // Chinese: "买50美元Amazon卡", "购买100元话费"
-  /(?:买|购买|充值|帮我买|我想买|我要买)\s*(\d+)\s*(?:美元|美金|刀|USD)\s*(.+?)(?:卡|充值卡|礼品卡)?$/i,
-  // Chinese: "买100元京东卡"
-  /(?:买|购买|充值|帮我买|我想买|我要买)\s*(\d+)\s*(?:元|块|人民币|CNY|rmb)\s*(.+?)(?:卡|充值卡|礼品卡)?$/i,
-  // Chinese: "帮我买 Amazon 50美元"
-  /(?:买|购买|帮我买|我想买|我要买)\s*(.+?)\s*(\d+)\s*(?:美元|美金|刀|元|块)/i,
-  // English: "I want to top up 100 yuan phone"
+  /(?:i\s+want\s+to\s+)?(?:buy|get|purchase)\s+(?:a\s+)?(.+?)(?:\s+for\s+(?:my\s+)?(?:girlfriend|boyfriend|friend|mom|dad|family|wife|husband|partner))?$/i,
+  /(?:top\s*up|recharge|reload)\s+(?:my\s+)?(.+)$/i,
+  /(?:buy|purchase|get|want)\s+(.+?)(?:\s+gift\s*card|\s+card)?$/i,
+  /(?:i\s+need|need|looking\s+for)\s+(?:a\s+)?(.+?)(?:\s+gift\s*card|\s+card)?$/i,
   /(?:top\s*up|recharge)\s+(\d+)\s*(?:yuan|rmb|cny)\s+(.+)/i,
-  // Fallback: "buy Amazon", "买京东"
-  /(?:buy|purchase|get|买|购买|帮我买|我想买)\s+(?:a\s+)?(.+?)(?:\s+gift\s*card|\s+card|卡|充值卡|礼品卡)?$/i,
 ];
 
 const CURRENCY_KEYWORDS: Record<string, string> = {
-  美元: "USD",
-  美金: "USD",
-  刀: "USD",
   dollar: "USD",
   usd: "USD",
-  元: "CNY",
-  块: "CNY",
-  人民币: "CNY",
+  yuan: "CNY",
   rmb: "CNY",
   cny: "CNY",
-  yuan: "CNY",
+};
+
+const PRODUCT_ALIASES: Record<string, string[]> = {
+  amazon: ["amazon-us", "amazon"],
+  steam: ["steam-us", "steam"],
+  netflix: ["netflix-us", "netflix"],
+  spotify: ["spotify-us", "spotify"],
+  uber: ["uber-us", "uber"],
+  apple: ["apple-us", "apple"],
+  google: ["google-us", "google play"],
+  itunes: ["apple-us", "itunes"],
+  "app store": ["apple-us", "app store"],
+  "google play": ["google-us", "google play"],
+  playstation: ["psn-us", "playstation"],
+  psn: ["psn-us", "psn"],
+  xbox: ["xbox-us", "xbox"],
+  nintendo: ["nintendo-us", "nintendo"],
 };
 
 function detectCurrency(input: string): string | undefined {
@@ -36,7 +40,6 @@ function detectCurrency(input: string): string | undefined {
   for (const [keyword, currency] of Object.entries(CURRENCY_KEYWORDS)) {
     if (lower.includes(keyword)) return currency;
   }
-  // Default: if has $ sign, USD
   if (input.includes("$")) return "USD";
   return undefined;
 }
@@ -48,7 +51,6 @@ export function parsePurchaseIntent(input: string): PurchaseIntent | null {
   for (const pattern of PURCHASE_PATTERNS) {
     const match = trimmed.match(pattern);
     if (match) {
-      // Try to extract denomination and product type
       const groups = match.slice(1).filter(Boolean);
       let denomination: number | undefined;
       let productType = "";
@@ -63,8 +65,17 @@ export function parsePurchaseIntent(input: string): PurchaseIntent | null {
       }
 
       if (productType) {
+        const lower = productType.toLowerCase();
+        let normalizedType = productType;
+        for (const [alias, targets] of Object.entries(PRODUCT_ALIASES)) {
+          if (lower.includes(alias)) {
+            normalizedType = targets[0];
+            break;
+          }
+        }
+
         return {
-          productType,
+          productType: normalizedType,
           denomination,
           currency: detectCurrency(trimmed),
           raw: trimmed,
@@ -79,10 +90,42 @@ export function parsePurchaseIntent(input: string): PurchaseIntent | null {
 export function isPurchaseQuery(input: string): boolean {
   const lower = input.toLowerCase().trim();
   const purchaseKeywords = [
-    "buy", "purchase", "get a", "want a",
-    "top up", "recharge",
-    "买", "购买", "充值", "帮我买", "我想买", "我要买",
-    "gift card", "礼品卡", "充值卡",
+    "buy", "purchase", "get a", "want a", "i want to",
+    "top up", "recharge", "reload", "need",
+    "gift card",
   ];
   return purchaseKeywords.some((k) => lower.includes(k));
+}
+
+export function isGeneralQuestion(input: string): boolean {
+  const lower = input.toLowerCase().trim();
+  const patterns = [
+    /^(what|how|why|when|where|who|which|can you|could you)/i,
+    /\?$/,
+  ];
+  return patterns.some((p) => p.test(lower));
+}
+
+export function getSuggestions(input: string): string[] {
+  const lower = input.toLowerCase();
+
+  if (lower.includes("gift") || lower.includes("card")) {
+    return ["Buy $50 Amazon card", "Buy $25 Steam card", "Show my gift cards"];
+  }
+
+  if (lower.includes("pay") || lower.includes("crypto")) {
+    return ["Show my ETH address", "Buy $50 Amazon card", "Sign a message"];
+  }
+
+  if (lower.includes("wallet") || lower.includes("address")) {
+    return ["Show my ETH address", "Show all addresses", "Create new wallet"];
+  }
+
+  return [
+    "Show my ETH address",
+    "Buy $50 Amazon gift card",
+    "Prove I own all chains",
+    "Sign a message",
+    "Show my gift cards",
+  ];
 }

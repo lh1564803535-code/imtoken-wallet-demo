@@ -12,11 +12,12 @@ const API_BASE = '/api/bitrefill';
 
 async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T | null> {
   try {
-    const url = new URL(`${window.location.origin}${API_BASE}/${path}`);
+    let url = `${API_BASE}/${path}`;
     if (params) {
-      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+      const qs = new URLSearchParams(params).toString();
+      url += `?${qs}`;
     }
-    const res = await fetch(url.toString());
+    const res = await fetch(url);
     if (!res.ok) return null;
     const json = await res.json();
     return json.data ?? json;
@@ -181,7 +182,7 @@ export async function createInvoice(
   denomination: number,
   chain: string
 ): Promise<BitrefillResponse<BitrefillInvoice>> {
-  // Try real API first (use test product for demo)
+  // Try real API first (use test product for demo — free, no balance deducted)
   const useTestProduct = productId === 'test-gift-card-code' || productId === 'test-gift-card-link';
   const realInvoice = await apiPost<any>('invoices', {
     products: [{
@@ -250,9 +251,8 @@ export async function simulatePaymentSuccess(
 ): Promise<{ code: string; pin?: string }> {
   // Try real API first (get redemption code for test product)
   // Official docs: use invoice.orders[0].id, not invoice.id
-  const orderId = invoice.orderId || invoice.id;
-  if (orderId) {
-    const order = await apiGet<any>(`orders/${orderId}`);
+  if (invoice.orderId) {
+    const order = await apiGet<any>(`orders/${invoice.orderId}`);
     if (order && order.redemption_info) {
       return {
         code: order.redemption_info.code || 'TEST-CODE-1234',

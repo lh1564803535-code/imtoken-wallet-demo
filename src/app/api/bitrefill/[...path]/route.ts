@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BITREFILL_API = 'https://api.bitrefill.com/v2';
+const ALLOWED_PREFIXES = ['products', 'invoices', 'orders', 'accounts', 'ping'];
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +14,11 @@ export async function GET(
 
   const { path } = await params;
   const pathStr = path.join('/');
+
+  if (!ALLOWED_PREFIXES.some(p => pathStr.startsWith(p))) {
+    return NextResponse.json({ error: 'Invalid API path' }, { status: 403 });
+  }
+
   const url = new URL(request.url);
   const searchParams = url.searchParams.toString();
   const targetUrl = `${BITREFILL_API}/${pathStr}${searchParams ? `?${searchParams}` : ''}`;
@@ -23,10 +29,19 @@ export async function GET(
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: AbortSignal.timeout(10000),
     });
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      return NextResponse.json(data, { status: response.status });
+    } catch {
+      return NextResponse.json(
+        { error: text || 'Invalid response from Bitrefill API' },
+        { status: response.status || 502 }
+      );
+    }
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch from Bitrefill API' }, { status: 502 });
   }
@@ -43,6 +58,11 @@ export async function POST(
 
   const { path } = await params;
   const pathStr = path.join('/');
+
+  if (!ALLOWED_PREFIXES.some(p => pathStr.startsWith(p))) {
+    return NextResponse.json({ error: 'Invalid API path' }, { status: 403 });
+  }
+
   let body;
   try {
     body = await request.json();
@@ -58,10 +78,19 @@ export async function POST(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
     });
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      return NextResponse.json(data, { status: response.status });
+    } catch {
+      return NextResponse.json(
+        { error: text || 'Invalid response from Bitrefill API' },
+        { status: response.status || 502 }
+      );
+    }
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch from Bitrefill API' }, { status: 502 });
   }

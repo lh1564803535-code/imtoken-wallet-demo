@@ -21,8 +21,9 @@ const categoryEmoji: Record<string, string> = {
 
 export function ProductCard({ product, onClick }: Props) {
   const [imgError, setImgError] = useState(false);
-  const minDenom = product.denominations[0];
-  const maxDenom = product.denominations[product.denominations.length - 1];
+  const denoms = product.denominations.filter(d => d > 0);
+  const minDenom = denoms[0];
+  const maxDenom = denoms[denoms.length - 1];
   const emoji = categoryEmoji[product.category] || "🎁";
   const showImage = product.imageUrl && !imgError;
 
@@ -60,9 +61,15 @@ export function ProductCard({ product, onClick }: Props) {
             {product.description}
           </p>
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs font-medium text-[#111d4a]">
-              {product.currency} {minDenom}–{maxDenom}
-            </span>
+            {denoms.length > 0 ? (
+              <span className="text-xs font-medium text-[#111d4a]">
+                {product.currency} {minDenom}–{maxDenom}
+              </span>
+            ) : product.range ? (
+              <span className="text-xs font-medium text-[#111d4a]">
+                {product.currency} {product.range.min}–{product.range.max}
+              </span>
+            ) : null}
             <div className="flex gap-1">
               {product.supportedCrypto.slice(0, 3).map((c) => (
                 <span
