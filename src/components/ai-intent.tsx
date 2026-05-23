@@ -283,7 +283,13 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
 
 export function AIIntent({ wallet, onNavigate, onAction }: Props) {
   const [input, setInput] = useState("");
-  const [results, setResults] = useState<IntentResult[]>([]);
+  const [results, setResults] = useState<IntentResult[]>([
+    {
+      type: "info",
+      message: "Welcome! I'm your AI wallet assistant. I can help you buy gift cards, get travel eSIMs, sign messages, and more. Try one of the suggestions below!",
+      suggestions: DEFAULT_SUGGESTIONS,
+    },
+  ]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isThinking, setIsThinking] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
