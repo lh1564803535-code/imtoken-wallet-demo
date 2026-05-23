@@ -1,33 +1,40 @@
-# 项目交接 - imToken 钱包 Demo
+# 椤圭洰浜ゆ帴 - imToken 閽卞寘 Demo
 
-## 当前状态 (2026-05-23 14:30)
-- 仓库: D:\MyProjects\code\imtoken-wallet-demo
-- 线上: https://imtoken-wallet-demo.vercel.app
+## 褰撳墠鐘舵€?(2026-05-23 14:30)
+- 浠撳簱: D:\MyProjects\code\imtoken-wallet-demo
+- 绾夸笂: https://imtoken-wallet-demo.vercel.app
 - GitHub: https://github.com/lh1564803535-code/imtoken-wallet-demo
-- 分支: main (commit: d61a5c7)
+- 鍒嗘敮: main (commit: d61a5c7)
 
-## 用户需求
-1. **先做市场调研** - 对标哪个方向的钱包？Rainbow? Phantom? imToken?
-2. **Agent 怎么用在钱包上** - 不是正则匹配，是真的 AI agent
-3. **UI 大改版** - 用户自己设计品牌形象
-4. **调研完再动手**
+## 鐢ㄦ埛闇€姹?1. **鍏堝仛甯傚満璋冪爺** - 瀵规爣鍝釜鏂瑰悜鐨勯挶鍖咃紵Rainbow? Phantom? imToken?
+2. **Agent 鎬庝箞鐢ㄥ湪閽卞寘涓?* - 涓嶆槸姝ｅ垯鍖归厤锛屾槸鐪熺殑 AI agent
+3. **UI 澶ф敼鐗?* - 鐢ㄦ埛鑷繁璁捐鍝佺墝褰㈣薄
+4. **璋冪爺瀹屽啀鍔ㄦ墜**
 
-## 市场调研方向
-- 主流钱包 UI 设计趋势 (Rainbow/Phantom/imToken/Coinbase Wallet)
-- AI Agent 在钱包中的应用场景 (意图交易、资产管理、DeFi 策略)
-- Agent 架构方案 (MCP、function calling、tool use)
-- 获奖作品分析 (其他黑客松的 AI 钱包项目)
+## 甯傚満璋冪爺鏂瑰悜
+- 涓绘祦閽卞寘 UI 璁捐瓒嬪娍 (Rainbow/Phantom/imToken/Coinbase Wallet)
+- AI Agent 鍦ㄩ挶鍖呬腑鐨勫簲鐢ㄥ満鏅?(鎰忓浘浜ゆ槗銆佽祫浜х鐞嗐€丏eFi 绛栫暐)
+- Agent 鏋舵瀯鏂规 (MCP銆乫unction calling銆乼ool use)
+- 鑾峰浣滃搧鍒嗘瀽 (鍏朵粬榛戝鏉剧殑 AI 閽卞寘椤圭洰)
 
-## 技术栈
+## 鎶€鏈爤
 - Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + shadcn/ui
 - @consenlabs/tcx-wasm (Token Core)
 - ethers.js (Sepolia RPC)
 - Mock Bitrefill API
 
-## 关键文件
-- src/app/page.tsx - 主页面
-- src/components/ai-intent.tsx - AI助手
-- src/components/bitrefill/ - 电商模块
-- src/lib/tcx.ts - Token Core 封装
-- FUTURE.md - 路线图
-- HANDOFF.md - 本文件
+## 鍏抽敭鏂囦欢
+- src/app/page.tsx - 涓婚〉闈?- src/components/ai-intent.tsx - AI鍔╂墜
+- src/components/bitrefill/ - 鐢靛晢妯″潡
+- src/lib/tcx.ts - Token Core 灏佽
+- FUTURE.md - 璺嚎鍥?- HANDOFF.md - 鏈枃浠
+
+## 助记词 UX 问题（必须改）
+当前: 只有普通文本显示+复制
+缺的:
+- 卡片网格展示 (12词编号排列)
+- "我已保存"确认checkbox
+- 验证环节 (随机选3个词确认)
+- 安全警告 (别截图、别分享、离线保存)
+- 导入时支持粘贴整段助记词
+对标: MetaMask、Rainbow、Phantom 的助记词流程
