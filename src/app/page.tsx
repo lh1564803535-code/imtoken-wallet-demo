@@ -103,7 +103,7 @@ export default function Home() {
       {/* Hero Section */}
       <header className="relative overflow-hidden bg-gradient-to-br from-[#0CC5FF] to-[#007FFF] text-white rounded-b-[32px]">
         {/* 右侧主视觉 SVG */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[10%] w-[250px] h-[250px] md:w-[320px] md:h-[320px] opacity-25 pointer-events-none">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[10%] w-[150px] h-[150px] sm:w-[250px] sm:h-[250px] md:w-[320px] md:h-[320px] opacity-25 pointer-events-none">
           <img
             src="/anniversary-visual.svg"
             alt=""
@@ -138,7 +138,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 border border-white/20 text-sm font-medium tracking-wide mb-3">
             🔐 AI-Native Zero-Trust Wallet
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
             Your Digital World,<br />Under Your Control
           </h1>
           <p className="mt-2 text-base md:text-lg text-white/90 font-medium tracking-tight">
@@ -153,7 +153,7 @@ export default function Home() {
         </div>
 
         {/* 生日蛋糕 */}
-        <div className="animate-cake-rise absolute left-6 bottom-0 w-[180px] z-10">
+        <div className="animate-cake-rise absolute left-6 bottom-0 w-[120px] sm:w-[180px] z-10">
           <div className="absolute left-[-10px] right-[-10px] bottom-[-12px] h-[20px] rounded-full bg-gradient-to-b from-white/95 to-[#dcf2ff]/95 shadow-lg" />
           <div className="relative h-[80px] rounded-t-2xl rounded-b-[20px] bg-gradient-to-b from-[#7de7ff] via-[#1fb8ff] to-[#007fff] border border-white/30 overflow-hidden">
             <div className="absolute inset-0 opacity-30" style={{ background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0 10px, transparent 10px 24px)' }} />
@@ -213,7 +213,7 @@ export default function Home() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6 rounded-full p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-5 mb-6 rounded-full p-1 h-auto overflow-x-auto">
             <TabsTrigger value="create" className="gap-1.5 rounded-full py-2.5">
               <Wallet className="h-4 w-4" />
               <span className="hidden sm:inline">Create</span>

@@ -1,3 +1,18 @@
+/**
+ * Token Core (tcx-wasm) Integration Layer
+ * 
+ * This module wraps @consenlabs/tcx-wasm to provide:
+ * - Wallet creation with PBKDF2 (600k rounds) key derivation
+ * - Multi-chain address derivation (ETH, BTC Legacy/SegWit/Taproot, TRON)
+ * - Message signing (PersonalSign) and transaction signing
+ * - Cross-chain ownership proof with ecrecover verification
+ * - Mnemonic export and keystore management
+ * 
+ * ALL operations run locally in the browser via WebAssembly.
+ * NO private keys or mnemonics ever leave the client.
+ * 
+ * Required by: imToken Hackathon (must use Token Core)
+ */
 import init, {
   create_keystore,
   derive_accounts,

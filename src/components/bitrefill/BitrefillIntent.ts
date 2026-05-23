@@ -1,3 +1,20 @@
+/**
+ * AI Intent Engine - E-Commerce Wallet Assistant
+ * 
+ * Parses natural language input to detect:
+ * 1. Purchase intent: "Buy $50 Amazon card" -> { productType, denomination, currency }
+ * 2. Travel intent: "I'm going to Japan" -> { destination, countryCode, recommended products }
+ * 3. General queries: Help, suggestions, product search
+ * 
+ * Architecture: Pure regex-based matching (no LLM dependency)
+ * - Fast response time (~0ms)
+ * - No API costs
+ * - Works offline
+ * - Supports English + Chinese
+ * 
+ * Product aliases normalize common names (steam -> steam-us)
+ * 70+ travel destinations mapped to country-specific product recommendations
+ */
 import type { PurchaseIntent } from "@/types/bitrefill";
 
 const PURCHASE_PATTERNS: RegExp[] = [

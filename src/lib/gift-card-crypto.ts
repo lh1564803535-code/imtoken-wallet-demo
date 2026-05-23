@@ -1,3 +1,17 @@
+/**
+ * Gift Card Encryption Module
+ * 
+ * Uses Web Crypto API (AES-256-GCM) to encrypt gift card codes before storage.
+ * - Key derived from user password via PBKDF2
+ * - Each card gets a unique IV (initialization vector)
+ * - Encrypted data stored in localStorage
+ * - Decryption only possible with correct password
+ * 
+ * Security model: Zero-trust, client-side only
+ * - No keys sent to server
+ * - No plaintext codes in storage
+ * - Password never stored, only used for key derivation
+ */
 import type { StoredGiftCard } from "@/types/bitrefill";
 
 const STORAGE_KEY = "imtoken_gift_cards_v1";
