@@ -170,6 +170,22 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 -mt-4 relative z-10 pb-12">
         {/* Zero Trust Architecture Banner */}
+        {/* Bitrefill Integration Badge */}
+        <div className="mb-3 rounded-xl bg-gradient-to-r from-[#f0f7ff] to-[#fff8f0] ring-1 ring-[#007fff]/10 px-4 py-2.5 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-[#007fff]" />
+            <span className="text-xs font-semibold text-[#111d4a]">Bitrefill Integration</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">Live</span>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#111d4a]">
+            <span>29 Gift Cards</span>
+            <span>11 eSIM Products</span>
+            <span>AI Intent Search</span>
+            <span>Encrypted Vault</span>
+          </div>
+        </div>
+
+        {/* Zero Trust Architecture Banner */}
         <div className="mb-4 rounded-xl bg-[#f0f7ff] ring-1 ring-[#007fff]/10 px-4 py-3 flex items-start gap-3">
           <Lock className="h-4 w-4 text-[#007fff] mt-0.5 flex-shrink-0" />
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#111d4a]">
