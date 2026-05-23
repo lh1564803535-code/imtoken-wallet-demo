@@ -20,7 +20,7 @@ export type BitrefillCategory =
   | "phone-topup"
   | "entertainment"
   | "travel"
-  | "esim" | "other";
+  | "esim" | "esim" | "other";
 
 export interface BitrefillInvoice {
   id: string;

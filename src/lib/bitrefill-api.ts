@@ -144,29 +144,16 @@ function applyFilters(products: BitrefillProduct[], filters: CatalogFilters): Bi
 export async function getProducts(
   filters: CatalogFilters
 ): Promise<BitrefillResponse<BitrefillProduct[]>> {
-  // Try real API first
-  const realProducts = await apiGet<any[]>('products', { limit: '30' });
-  if (realProducts && realProducts.length > 0) {
-    const mapped = realProducts.map(mapApiProduct);
-    return { success: true, data: applyFilters(mapped, filters) };
-  }
-
-  // Fallback to mock
-  await delay(300 + Math.random() * 200);
+  // Use mock data for demo stability
+  await delay(200 + Math.random() * 150);
   return { success: true, data: applyFilters(MOCK_PRODUCTS, filters) };
 }
 
 export async function getProductById(
   id: string
 ): Promise<BitrefillResponse<BitrefillProduct>> {
-  // Try real API first
-  const realProduct = await apiGet<any>(`products/${id}`);
-  if (realProduct) {
-    return { success: true, data: mapApiProduct(realProduct) };
-  }
-
-  // Fallback to mock
-  await delay(200);
+  // Use mock data for demo stability
+  await delay(150);
   const product = MOCK_PRODUCTS.find((p) => p.id === id);
   if (!product) {
     return {
@@ -249,20 +236,8 @@ export async function createInvoice(
 export async function simulatePaymentSuccess(
   invoice: BitrefillInvoice
 ): Promise<{ code: string; pin?: string }> {
-  // Try real API first (get redemption code for test product)
-  // Official docs: use invoice.orders[0].id, not invoice.id
-  if (invoice.orderId) {
-    const order = await apiGet<any>(`orders/${invoice.orderId}`);
-    if (order && order.redemption_info) {
-      return {
-        code: order.redemption_info.code || 'TEST-CODE-1234',
-        pin: order.redemption_info.pin,
-      };
-    }
-  }
-
-  // Fallback to mock
-  await delay(2000);
+  // Use mock data for demo stability
+  await delay(1500);
   return { code: generateGiftCardCode() };
 }
 
