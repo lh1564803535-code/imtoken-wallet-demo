@@ -284,7 +284,7 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
 export function AIIntent({ wallet, onNavigate, onAction }: Props) {
   const [input, setInput] = useState("");
   const [results, setResults] = useState<IntentResult[]>([]);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isThinking, setIsThinking] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
