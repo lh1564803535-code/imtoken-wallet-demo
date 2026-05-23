@@ -198,6 +198,19 @@ export default function Home() {
 
         {/* AI Intent Assistant */}
         <AIIntent wallet={wallet} onNavigate={handleNavigate} onAction={handleAIAction} />
+        {/* Demo Quick Start */}
+        <div className="mb-4 rounded-xl bg-white ring-1 ring-[#e0e3e8] p-4" style={{ boxShadow: "0 1px 4px 0 color-mix(in srgb, #111d4a 3%, transparent)" }}>
+          <p className="text-xs font-semibold text-[#111d4a] mb-2">Quick Demo Guide</p>
+          <div className="flex flex-wrap gap-2">
+            <span className="text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-200">1. Create wallet</span>
+            <span className="text-[10px] text-[#99a1af] self-center">&rarr;</span>
+            <span className="text-[10px] px-2 py-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">2. Try AI: "Buy $50 Amazon"</span>
+            <span className="text-[10px] text-[#99a1af] self-center">&rarr;</span>
+            <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">3. Sign & get gift card</span>
+            <span className="text-[10px] text-[#99a1af] self-center">&rarr;</span>
+            <span className="text-[10px] px-2 py-1 rounded-full bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200">4. Try: "I'm going to Japan"</span>
+          </div>
+        </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-6 rounded-full p-1 h-auto">
