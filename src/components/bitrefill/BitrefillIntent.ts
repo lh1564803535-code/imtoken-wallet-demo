@@ -129,3 +129,85 @@ export function getSuggestions(input: string): string[] {
     "Show my gift cards",
   ];
 }
+// Travel destination -> country code mapping
+const DESTINATION_MAP: Record<string, string> = {
+  japan: "JP", tokyo: "JP", osaka: "JP", kyoto: "JP",
+  korea: "KR", seoul: "KR", busan: "KR",
+  china: "CN", beijing: "CN", shanghai: "CN", shenzhen: "CN", guangzhou: "CN", hangzhou: "CN",
+  "hong kong": "HK", hk: "HK",
+  taiwan: "TW", taipei: "TW",
+  thailand: "TH", bangkok: "TH", phuket: "TH",
+  singapore: "SG",
+  vietnam: "VN", "ho chi minh": "VN", hanoi: "VN",
+  malaysia: "MY", "kuala lumpur": "MY",
+  indonesia: "ID", bali: "ID", jakarta: "ID",
+  philippines: "PH", manila: "PH",
+  india: "IN", mumbai: "IN", delhi: "IN",
+  usa: "US", america: "US", "new york": "US", "los angeles": "US", "san francisco": "US",
+  uk: "GB", england: "GB", london: "GB",
+  france: "FR", paris: "FR",
+  germany: "DE", berlin: "DE", munich: "DE",
+  italy: "IT", rome: "IT",
+  spain: "ES", barcelona: "ES", madrid: "ES",
+  australia: "AU", sydney: "AU", melbourne: "AU",
+  canada: "CA", toronto: "CA", vancouver: "CA",
+  brazil: "BR", "rio de janeiro": "BR", "sao paulo": "BR",
+  mexico: "MX", "mexico city": "MX",
+  dubai: "AE", "united arab emirates": "AE", "abu dhabi": "AE",
+  egypt: "EG", cairo: "EG",
+  "south africa": "ZA", "cape town": "ZA", johannesburg: "ZA",
+};
+
+// Country code -> recommended product keywords
+const COUNTRY_PRODUCTS: Record<string, string[]> = {
+  CN: ["jd", "taobao", "meituan", "eleme", "didi", "china-mobile", "china-unicom", "netease", "steam-cn"],
+  JP: ["amazon", "nintendo", "playstation", "google-play"],
+  KR: ["google-play", "playstation", "netflix"],
+  US: ["amazon", "uber", "netflix", "spotify", "steam", "apple", "google-play", "playstation", "xbox"],
+  GB: ["amazon", "uber", "netflix", "spotify", "google-play"],
+  TH: ["google-play", "netflix", "uber"],
+  SG: ["google-play", "netflix", "uber", "spotify"],
+  VN: ["google-play", "netflix"],
+  AU: ["amazon", "uber", "netflix", "spotify", "google-play"],
+  CA: ["amazon", "uber", "netflix", "spotify", "google-play"],
+  DE: ["amazon", "netflix", "spotify", "google-play"],
+  FR: ["amazon", "netflix", "spotify", "google-play"],
+  DEFAULT: ["amazon", "netflix", "uber", "google-play", "spotify"],
+};
+
+export interface TravelRecommendation {
+  destination: string;
+  countryCode: string;
+  message: string;
+}
+
+export function detectTravelIntent(input: string): TravelRecommendation | null {
+  const lower = input.toLowerCase().trim();
+
+  // Travel patterns
+  const travelPatterns = [
+    /(?:i'?m|i am|i'?ll be|going to|travel(?:ing|ling)? to|visiting|flying to|heading to|trip to|vacation in|holiday in)\s+(?:in\s+)?(?:the\s+)?(.+?)(?:\s+next|this|in\s+\w+|for|with|\.|,|$)/i,
+    /(?:去|飞去|旅游去|要去|打算去|计划去)\s*(.+?)(?:旅游|玩|出差|next|in|for|$)/i,
+  ];
+
+  for (const pattern of travelPatterns) {
+    const match = lower.match(pattern);
+    if (match) {
+      const dest = match[1].trim().toLowerCase();
+      const country = DESTINATION_MAP[dest];
+      if (country) {
+        return {
+          destination: match[1].trim(),
+          countryCode: country,
+          message: "travel",
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+export function getTravelProducts(countryCode: string): string[] {
+  return COUNTRY_PRODUCTS[countryCode] || COUNTRY_PRODUCTS["DEFAULT"];
+}

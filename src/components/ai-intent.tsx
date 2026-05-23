@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Sparkles, Send, ArrowRight, ShoppingCart, Gift } from "lucide-react";
+import { Sparkles, Send, ArrowRight, ShoppingCart, Gift, Globe, Plane } from "lucide-react";
 import {
   parsePurchaseIntent,
   isPurchaseQuery,
   isGeneralQuestion,
   getSuggestions,
+  detectTravelIntent,
+  getTravelProducts,
 } from "@/components/bitrefill/BitrefillIntent";
 import { searchProductsByIntent } from "@/lib/bitrefill-api";
 import type { WalletData } from "@/lib/tcx";
@@ -19,12 +21,14 @@ interface Props {
 }
 
 interface IntentResult {
-  type: "success" | "info" | "navigate" | "error" | "products";
+  type: "success" | "info" | "navigate" | "error" | "products" | "travel";
   message: string;
   action?: string;
   payload?: string;
   products?: BitrefillProduct[];
   suggestions?: string[];
+  destination?: string;
+  countryCode?: string;
 }
 
 const DEFAULT_SUGGESTIONS = [
@@ -33,11 +37,13 @@ const DEFAULT_SUGGESTIONS = [
   "Prove I own all chains",
   "Sign a message",
   "Show my gift cards",
+  "I'm going to Japan",
 ];
 
 function parseIntent(input: string, hasWallet: boolean): IntentResult {
   const lower = input.toLowerCase().trim();
 
+  // No wallet guard
   if (
     !hasWallet &&
     !lower.includes("create") &&
@@ -60,6 +66,7 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
     }
   }
 
+  // Show address
   if (lower.match(/show.*(eth|ethereum)/)) {
     return { type: "success", message: "Here's your Ethereum address.", action: "show-eth" };
   }
@@ -73,14 +80,17 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
     return { type: "success", message: "Showing all your multi-chain addresses.", action: "show-all" };
   }
 
+  // Copy all
   if (lower.match(/copy.*all|copy.*address/)) {
     return { type: "success", message: "Copied all addresses to clipboard!", action: "copy-all" };
   }
 
+  // Prove ownership
   if (lower.match(/prove|proof|ownership|verify/)) {
     return { type: "navigate", message: "Generating cross-chain ownership proof...", action: "prove" };
   }
 
+  // Sign message
   if (lower.match(/sign/)) {
     const msgMatch = input.match(/sign\s+(?:a\s+)?(?:message\s+)?(?:saying\s+)?["']?(.+?)["']?$/i);
     const payload = msgMatch ? msgMatch[1] : undefined;
@@ -91,35 +101,94 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
     };
   }
 
+  // Export keystore
   if (lower.match(/export|download|keystore|backup/)) {
     return { type: "navigate", message: "Opening Security tab to export your keystore.", action: "export" };
   }
 
+  // Create wallet
   if (lower.match(/create|new.*wallet|generate/)) {
     return { type: "navigate", message: "Let's create a new wallet!", action: "navigate-create" };
   }
 
+  // Import wallet
   if (lower.match(/import|restore|recover/)) {
     return { type: "navigate", message: "Opening the Import tab to restore your wallet.", action: "navigate-import" };
   }
 
+  // Help
   if (lower.match(/help|what can you|how do i/)) {
     return {
       type: "info",
-      message: "I'm your e-commerce wallet assistant. I can:\n- Show & copy multi-chain addresses\n- Prove cross-chain ownership\n- Sign messages & transactions\n- Buy gift cards with crypto (Amazon, Steam, Netflix...)\n- Manage your gift card vault\n\nJust type what you want to do!",
+      message: "I'm your e-commerce wallet assistant. I can:\n- Show & copy multi-chain addresses\n- Prove cross-chain ownership\n- Sign messages & transactions\n- Buy gift cards with crypto (Amazon, Steam, Netflix...)\n- Buy eSIM for travel\n- Manage your gift card vault\n\nTry: 'I'm going to Japan' or 'Buy $50 Amazon card'",
       suggestions: DEFAULT_SUGGESTIONS,
     };
   }
 
+  // Gift card vault
   if (lower.match(/my.*gift\s*card|my.*card|show.*vault/)) {
     return { type: "navigate", message: "Opening your gift card vault.", action: "show-vault" };
   }
 
+  // Shop / browse
   if (lower.match(/shop|store|browse|gift\s*card/)) {
     return { type: "navigate", message: "Opening the gift card shop.", action: "show-shop" };
   }
 
-  // Purchase intent with product search
+  // === Travel intent detection ===
+  const travel = detectTravelIntent(input);
+  if (travel) {
+    const productKeywords = getTravelProducts(travel.countryCode);
+    const allProducts: BitrefillProduct[] = [];
+    for (const kw of productKeywords) {
+      const found = searchProductsByIntent(kw);
+      for (const p of found) {
+        if (!allProducts.some((x) => x.id === p.id)) {
+          allProducts.push(p);
+        }
+      }
+    }
+
+    // Also search for eSIM for this destination
+    const esimProducts = searchProductsByIntent("esim " + travel.destination);
+
+    // Merge and deduplicate
+    const merged = [...esimProducts, ...allProducts];
+    const unique = merged.filter((p, i) => merged.findIndex((x) => x.id === p.id) === i).slice(0, 5);
+
+    if (unique.length > 0) {
+      return {
+        type: "travel",
+        message: "Heading to " + travel.destination + "? Here's what I recommend for your trip:",
+        products: unique,
+        destination: travel.destination,
+        countryCode: travel.countryCode,
+        suggestions: ["Buy " + unique[0].name, "Show my gift cards", "Show my ETH address"],
+      };
+    }
+
+    return {
+      type: "info",
+      message: "Heading to " + travel.destination + "! Browse our shop for local gift cards and eSIMs.",
+      action: "show-shop",
+      suggestions: ["Browse gift cards", "Buy eSIM"],
+    };
+  }
+
+  // eSIM queries
+  if (lower.match(/esim|sim\s*card|data\s*plan|roaming|travel\s+data|漫游|流量/)) {
+    const esimProducts = searchProductsByIntent("esim");
+    if (esimProducts.length > 0) {
+      return {
+        type: "products",
+        message: "Found " + esimProducts.length + " eSIM options for travel:",
+        products: esimProducts.slice(0, 4),
+        suggestions: ["I'm going to Japan", "I'm going to Thailand"],
+      };
+    }
+  }
+
+  // === Purchase intent with product search ===
   if (isPurchaseQuery(lower)) {
     const intent = parsePurchaseIntent(input);
     if (intent) {
@@ -161,7 +230,7 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
   if (isGeneralQuestion(lower)) {
     return {
       type: "info",
-      message: "I'm a wallet assistant focused on crypto payments and gift cards. I might not answer general questions, but I can help you with wallet operations and buying gift cards. What would you like to do?",
+      message: "I'm a wallet assistant focused on crypto payments, gift cards, and travel eSIMs. I might not answer general questions, but I can help you with:\n- Buying gift cards\n- eSIM for travel\n- Wallet operations\n\nWhat would you like to do?",
       suggestions: getSuggestions(input),
     };
   }
@@ -169,7 +238,7 @@ function parseIntent(input: string, hasWallet: boolean): IntentResult {
   // Product mention without buy keyword
   const productKeywords = [
     "amazon", "steam", "netflix", "spotify", "uber", "apple", "google",
-    "playstation", "psn", "xbox", "nintendo", "itunes",
+    "playstation", "psn", "xbox", "nintendo", "itunes", "esim",
   ];
   const hasProductMention = productKeywords.some((k) => lower.includes(k));
 
@@ -286,7 +355,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
       productType: product.name,
       denomination: product.denominations[0],
       currency: product.currency,
-      raw: "Buy $" + product.denominations[0] + " " + product.name + " gift card",
+      raw: "Buy $" + product.denominations[0] + " " + product.name,
     };
     onAction("purchase", JSON.stringify(intent));
     onNavigate("shop");
@@ -307,7 +376,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
         >
           <Sparkles className="h-4 w-4 text-[#007fff]" />
           <span className="text-sm font-medium text-[#111d4a]">AI Wallet Assistant</span>
-          <span className="text-xs text-[#99a1af] ml-auto">E-commerce + crypto payments</span>
+          <span className="text-xs text-[#99a1af] ml-auto">Gift cards, eSIM & crypto payments</span>
         </button>
 
         {isExpanded && (
@@ -326,16 +395,19 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                           ? "bg-red-50 text-red-700"
                           : r.type === "products"
                           ? "bg-amber-50 text-amber-700"
+                          : r.type === "travel"
+                          ? "bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-800 border border-blue-200"
                           : "bg-[#f8f9fa] text-[#111d4a]"
                       )}
                     >
                       <div className="flex items-center gap-1.5">
                         {r.type === "products" && <Gift className="h-3 w-3 flex-shrink-0" />}
+                        {r.type === "travel" && <Plane className="h-3 w-3 flex-shrink-0" />}
                         <span>{r.message}</span>
                       </div>
                     </div>
 
-                    {r.type === "products" && r.products && r.products.length > 0 && (
+                    {(r.type === "products" || r.type === "travel") && r.products && r.products.length > 0 && (
                       <div className="flex gap-2 overflow-x-auto pb-1">
                         {r.products.map((p) => (
                           <button
@@ -343,12 +415,16 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                             onClick={() => handleProductClick(p)}
                             className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-[#e0e3e8] hover:border-[#007fff] hover:shadow-sm transition-all text-left"
                           >
-                            <ShoppingCart className="h-4 w-4 text-[#007fff]" />
+                            {p.category === "esim" ? (
+                              <Globe className="h-4 w-4 text-cyan-500" />
+                            ) : (
+                              <ShoppingCart className="h-4 w-4 text-[#007fff]" />
+                            )}
                             <div>
                               <div className="text-xs font-medium text-[#111d4a]">{p.name}</div>
                               <div className="text-[10px] text-[#99a1af]">
                                 {"$" + p.denominations[0]}+ &middot; {p.category}
-                                {(p.discount ?? 0) > 0 && " &middot; " + ((p.discount ?? 0) * 100).toFixed(0) + "% off"}
+                                {(p.discount ?? 0) > 0 ? " &middot; " + ((p.discount ?? 0) * 100).toFixed(0) + "% off" : ""}
                               </div>
                             </div>
                           </button>
@@ -381,7 +457,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                placeholder="Try: Buy $50 Amazon gift card, Show my ETH address..."
+                placeholder="Try: Buy $50 Amazon gift card or Im going to Japan"
                 className="flex-1 text-sm bg-[#f8f9fa] rounded-full px-4 py-2 ring-1 ring-[#111d4a]/10 focus:outline-none focus:ring-2 focus:ring-[#007fff]/30 placeholder:text-[#99a1af]"
               />
               <button
@@ -400,7 +476,7 @@ export function AIIntent({ wallet, onNavigate, onAction }: Props) {
                   onClick={() => handleSuggestionClick(s)}
                   className="text-[10px] px-2.5 py-1 rounded-full bg-[#f0f7ff] text-[#007fff] hover:bg-[#e0efff] transition-colors flex items-center gap-1"
                 >
-                  <ArrowRight className="h-2.5 w-2.5" />
+                  {s.match(/going to|travel/i) ? <Plane className="h-2.5 w-2.5" /> : <ArrowRight className="h-2.5 w-2.5" />}
                   {s}
                 </button>
               ))}

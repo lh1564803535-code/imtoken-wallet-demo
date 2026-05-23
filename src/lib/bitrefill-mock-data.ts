@@ -233,6 +233,7 @@ export const CATEGORIES: { value: string; label: string }[] = [
   { value: "phone-topup", label: "Phone Top-up" },
   { value: "entertainment", label: "Entertainment" },
   { value: "travel", label: "Travel" },
+        { value: "esim", label: "eSIM" },
 ];
 
 // Mock exchange rates (1 unit of crypto = X USD)
