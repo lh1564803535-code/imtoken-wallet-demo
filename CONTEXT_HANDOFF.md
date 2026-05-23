@@ -122,3 +122,31 @@ git push origin main             # 推送到 GitHub
 - **视频**：已录制
 - **赛道**：Bitrefill 专享（暂无竞争者）
 - **同时冲击**：最佳 AI 钱包 + 最佳用户掌控 + 阳光奖
+
+## Latest Updates (2026-05-23 13:50 UTC)
+
+### AI Assistant v2 (E-Commerce Wallet Assistant)
+- Enhanced purchase intent: 15 regex patterns + product alias normalization
+- Travel intent detection: 70+ destinations with country-specific product recommendations
+- eSIM product line: 11 products (Japan, Thailand, Korea, Europe, USA, Singapore, Global, Turkey, Hong Kong, Vietnam, Malaysia)
+- Loading animation with "Thinking..." state
+- Product cards in chat with discount badges and crypto icons
+- Smart fallback with contextual suggestions
+- Auto-expand on first visit
+
+### Bitrefill Integration
+- Force mock mode for stable demo (no real API calls)
+- 29 gift card products + 11 eSIM products
+- eSIM category filter in shop
+- Bitrefill badge on homepage
+
+### Gift Card Vault
+- PIN display with show/hide toggle
+- Better card layout with chain and date info
+- Improved empty state with product suggestions
+- Export functionality
+
+### Tech Stack
+- Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + shadcn/ui + @consenlabs/tcx-wasm
+- All Bitrefill API calls use mock data for demo stability
+- AES-GCM encryption for gift card codes
