@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html style="" class="" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <script nonce="PvLozBVP97eEfOX47hEHAA==">
+      window._dom_ts = Date.now();
+    </script>
+    <link rel="stylesheet" href="/assets/Text-vb1tRuSj.css" crossorigin />
+<link rel="stylesheet" href="/assets/Header-CAWkZLh6.css" crossorigin />
+<link rel="stylesheet" href="/assets/Alert-CKpIhxt6.css" crossorigin />
+<link rel="stylesheet" href="/assets/Button-DUd9V953.css" crossorigin />
+<link rel="stylesheet" href="/assets/Flex-CBqrzjUj.css" crossorigin />
+<link rel="stylesheet" href="/assets/Link-B6vCSCdt.css" crossorigin />
+<link rel="stylesheet" href="/assets/Spinner-DtVXxDc6.css" crossorigin />
+<link rel="stylesheet" href="/assets/Stack-DwHNhaFJ.css" crossorigin />
+<link rel="stylesheet" href="/assets/credit-card-BHevS6Uw.css" crossorigin />
+<link rel="stylesheet" href="/assets/Image-Bbbl7GSj.css" crossorigin />
+<link rel="stylesheet" href="/assets/Backdrop-CImOsIjY.css" crossorigin />
+<link rel="stylesheet" href="/assets/Counter-DFNSvKxZ.css" crossorigin />
+<link rel="stylesheet" href="/assets/EmptyState-DPn2i2ZH.css" crossorigin />
+<link rel="stylesheet" href="/assets/PageContainer-C9Sx0q1c.css" crossorigin />
+<link rel="stylesheet" href="/assets/PreferencesButton-CoKjCmYv.css" crossorigin />
+<link rel="stylesheet" href="/assets/Skeleton-B0PvOGCy.css" crossorigin />
+<link rel="stylesheet" href="/assets/RewardsBanner-BqZz_oES.css" crossorigin />
+<link rel="stylesheet" href="/assets/Card-B5veHcdd.css" crossorigin />
+<link rel="stylesheet" href="/assets/Tag-CzFiEk0D.css" crossorigin />
+<link rel="stylesheet" href="/assets/Input-Co4Qphjw.css" crossorigin />
+<link rel="stylesheet" href="/assets/FormControlWrapper-BVV8wBEt.css" crossorigin />
+<link rel="stylesheet" href="/assets/Popover-C6488GXa.css" crossorigin />
+<link rel="stylesheet" href="/assets/SuggestedCountryPopover-CB--Yj8E.css" crossorigin />
+<link rel="stylesheet" href="/assets/Combobox-zFBC6oRi.css" crossorigin />
+<link rel="stylesheet" href="/assets/Command-q5BsoKZZ.css" crossorigin />
+<link rel="stylesheet" href="/assets/Notice-DC98bN0r.css" crossorigin />
+<link rel="stylesheet" href="/assets/index-D4USwkjV.css" crossorigin />
+<link rel="stylesheet" href="/assets/URLStructureRouter-npRVss3c.css" crossorigin />
+<link rel="stylesheet" href="/assets/LandingFooter-Ckx_0eCA.css" crossorigin />
+<link rel="stylesheet" href="/assets/AcceptedPaymentMethods-BdIQ9c3j.css" crossorigin />
+<link rel="stylesheet" href="/assets/Divider-CYrs_lgC.css" crossorigin />
+<link rel="stylesheet" href="/assets/StatusText-YL2xEzDb.css" crossorigin />
+<link rel="stylesheet" href="/assets/SkipNavContent-DogOaaDH.css" crossorigin />
+<link rel="stylesheet" href="/assets/Notifications-Ccjm7GPx.css" crossorigin />
+<link rel="stylesheet" href="/assets/LandingSection-ByKy5iS0.css" crossorigin />
+<link rel="stylesheet" href="/assets/ChainIcon-CwhZgRYG.css" crossorigin />
+<link rel="stylesheet" href="/assets/agents-BRQgJU-J.css" crossorigin />
+<script type="module" src="/assets/polyfills-D6Kn-aXl.js" crossorigin="anonymous"></script>
+<script type="module" src="/assets/website-CG9UxaBN.js" crossorigin="anonymous"></script>
+    <script nonce="PvLozBVP97eEfOX47hEHAA==">
+      
+const dolog=false;
+console.log({ FirstJS: performance.now() });
+let fetchStart=0;
+if(performance && performance.getEntriesByType) fetchStart=performance.getEntriesByType("navigation")[0].fetchStart;
+const beaconLog={};
+let ended=0;
+const beacon_url0=document.location.href;
+const beacon_ref0=document.referrer;
+
+function getInfo()
+{
+  const q0=performance.getEntriesByType("navigation")[0];
+  const st=q0.responseStart;
+  const en=q0.responseEnd;
+  const transferTime=en-st;
+  const size=q0.transferSize||q0.encodedBodySize||q0.decodedBodySize;
+  const bps=((size*8)/(transferTime/1000));
+  return {transferTime,size,bps,st,en};
+}
+
+
+function beacon(k,v)
+{
+  const t=performance.now()-fetchStart;
+  if(!beaconLog[k])
+  {
+    if(dolog) console.log('beacon',t,k,v);
+    beaconLog[k]={t,v};
+  }
+}
+window.addEventListener("error",e=>{
+  let msg='';
+  let stack=[];
+  if(e.message) msg=e.message;
+  if(e.error)
+  {
+  if(e.error.stack) stack=e.error.stack.split(/\n\s+/);
+  if(e.error.message) msg=e.error.message;
+  }
+  beacon('error',{ msg,stack } ) ;
+});
+
+for(const ev of['load','DOMContentLoaded','scroll']) window.addEventListener(ev,e=>{beacon(ev);});
+window.addEventListener('DOMContentLoaded',()=>{
+  if(dolog) console.log('beacon',{fetchStart},getInfo());
+});
+for(const ev of['pagehide','beforeunload'])
+window.addEventListener(ev,e=>{
+if(!ended++){
+beacon('end');
+const beacon_url1=document.location.href;
+const beacon_ref1=document.referrer;
+const i=getInfo();
+const debug0=new Date(1970,8,1,13).toLocaleString();
+const debug1=new Date(1970,8,1,13).toString();
+
+navigator.sendBeacon("/api/beacon", JSON.stringify({version:2,
+  brid:window.__brid,
+  isfirst:window.__isfirst,
+  fetchStart,
+  bps:i.bps,
+  transferTime:i.transferTime,
+  sessionLength:performance.now(),
+  al0:navigator.languages,
+  al1:window.__accept_language,
+  debug0,
+  debug1,
+  url0:beacon_url0,
+  url1:beacon_url1,
+  ref:beacon_ref0,
+  log:beaconLog}));
+}
+});
+
+window.__beacon=beacon;
+beacon('start');
+
+    </script>
+    
+    
+<title data-rh="true">Bitrefill for AI Agents | The commerce layer for agentic AI - Bitrefill</title>
+<meta data-rh="true" http-equiv="x-ua-compatible" content="ie=edge"/><meta data-rh="true" name="viewport" content="width=device-width, initial-scale=1"/><meta data-rh="true" name="format-detection" content="telephone=no"/><meta data-rh="true" name="apple-mobile-web-app-capable" content="yes"/><meta data-rh="true" name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta data-rh="true" name="apple-mobile-web-app-title" content="Bitrefill"/><meta data-rh="true" name="application-name" content="Bitrefill"/><meta data-rh="true" name="mobile-web-app-capable" content="yes"/><meta data-rh="true" name="msapplication-navbutton-color" content="#002b28"/><meta data-rh="true" name="msapplication-TileColor" content="#002b28"/><meta data-rh="true" name="theme-color" content="#ffffff"/><meta data-rh="true" property="al:android:app_name" content="Bitrefill"/><meta data-rh="true" property="al:android:package" content="com.bitrefill.app"/><meta data-rh="true" property="al:ios:app_name" content="Bitrefill"/><meta data-rh="true" property="al:ios:app_store_id" content="1378102623"/><meta data-rh="true" name="description" content="AI agents can&#x27;t do KYC. They can&#x27;t hold credit cards. But they need to buy things. Bitrefill gives agents permissionless, programmable access to 8,000+ products in 170+ countries via MCP."/><meta data-rh="true" property="og:title" content="Bitrefill for AI Agents | The commerce layer for agentic AI"/><meta data-rh="true" property="og:type" content="website"/><meta data-rh="true" property="og:image" content="https://cdn.bitrefill.com/content/cn/b_auto%2Cc_pad%2Ch_630%2Cw_1200/v23/landing%2Fsocial.webp"/><meta data-rh="true" property="og:image:alt" content="Bitrefill for AI Agents | The commerce layer for agentic AI"/><meta data-rh="true" property="og:description" content="AI agents can&#x27;t do KYC. They can&#x27;t hold credit cards. But they need to buy things. Bitrefill gives agents permissionless, programmable access to 8,000+ products in 170+ countries via MCP."/><meta data-rh="true" property="og:locale" content="en"/><meta data-rh="true" property="og:site_name" content="Bitrefill"/><meta data-rh="true" property="og:locale:alternate" content="en_US"/><meta data-rh="true" property="og:locale:alternate" content="ru_RU"/><meta data-rh="true" property="og:locale:alternate" content="fr_FR"/><meta data-rh="true" property="og:locale:alternate" content="es_ES"/><meta data-rh="true" property="og:locale:alternate" content="de_DE"/><meta data-rh="true" property="og:locale:alternate" content="it_IT"/><meta data-rh="true" property="og:locale:alternate" content="nl_NL"/><meta data-rh="true" property="og:locale:alternate" content="pt_PT"/><meta data-rh="true" property="og:locale:alternate" content="vi_VN"/><meta data-rh="true" property="og:locale:alternate" content="ko_KR"/><meta data-rh="true" property="og:locale:alternate" content="ja_JP"/><meta data-rh="true" property="og:locale:alternate" content="zh_Hans"/><meta data-rh="true" property="og:locale:alternate" content="pl_PL"/><meta data-rh="true" property="og:locale:alternate" content="uk_UA"/><meta data-rh="true" property="og:locale:alternate" content="tr_TR"/><meta data-rh="true" name="twitter:card" content="summary_large_image"/><meta data-rh="true" name="twitter:site" content="@bitrefill"/><meta data-rh="true" name="twitter:title" content="Bitrefill for AI Agents | The commerce layer for agentic AI"/><meta data-rh="true" name="twitter:description" content="AI agents can&#x27;t do KYC. They can&#x27;t hold credit cards. But they need to buy things. Bitrefill gives agents permissionless, programmable access to 8,000+ products in 170+ countries via MCP."/><meta data-rh="true" name="twitter:image" content="https://cdn.bitrefill.com/content/cn/b_auto%2Cc_pad%2Ch_630%2Cw_1200/v23/landing%2Fsocial.webp"/><meta data-rh="true" name="twitter:image:alt" content="Bitrefill for AI Agents | The commerce layer for agentic AI"/><meta data-rh="true" name="msapplication-starturl" content="https://www.bitrefill.com/login"/><meta data-rh="true" name="apple-itunes-app" content="app-id=1378102623, app-argument=https://www.bitrefill.com/agents"/>
+<link data-rh="true" rel="canonical" href="https://www.bitrefill.com/agents/?hl=en"/><link data-rh="true" rel="sitemap" href="/sitemap.xml"/><link data-rh="true" href="/opensearch.xml" rel="search" title="Bitrefill" type="application/opensearchdescription+xml"/><link data-rh="true" rel="apple-touch-icon" href="/apple-touch-icon.png"/><link data-rh="true" rel="manifest" href="/site.webmanifest"/><link data-rh="true" rel="alternate" hrefLang="en" href="https://www.bitrefill.com/agents/?hl=en"/><link data-rh="true" rel="alternate" hrefLang="ru" href="https://www.bitrefill.com/agents/?hl=ru"/><link data-rh="true" rel="alternate" hrefLang="fr" href="https://www.bitrefill.com/agents/?hl=fr"/><link data-rh="true" rel="alternate" hrefLang="es" href="https://www.bitrefill.com/agents/?hl=es"/><link data-rh="true" rel="alternate" hrefLang="de" href="https://www.bitrefill.com/agents/?hl=de"/><link data-rh="true" rel="alternate" hrefLang="it" href="https://www.bitrefill.com/agents/?hl=it"/><link data-rh="true" rel="alternate" hrefLang="nl" href="https://www.bitrefill.com/agents/?hl=nl"/><link data-rh="true" rel="alternate" hrefLang="pt" href="https://www.bitrefill.com/agents/?hl=pt"/><link data-rh="true" rel="alternate" hrefLang="vi" href="https://www.bitrefill.com/agents/?hl=vi"/><link data-rh="true" rel="alternate" hrefLang="ko" href="https://www.bitrefill.com/agents/?hl=ko"/><link data-rh="true" rel="alternate" hrefLang="ja" href="https://www.bitrefill.com/agents/?hl=ja"/><link data-rh="true" rel="alternate" hrefLang="zh-Hans" href="https://www.bitrefill.com/agents/?hl=zh-Hans"/><link data-rh="true" rel="alternate" hrefLang="pl" href="https://www.bitrefill.com/agents/?hl=pl"/><link data-rh="true" rel="alternate" hrefLang="uk" href="https://www.bitrefill.com/agents/?hl=uk"/><link data-rh="true" rel="alternate" hrefLang="tr" href="https://www.bitrefill.com/agents/?hl=tr"/>
+
+
+
+    
+  </head>
+  <body>
+    <div id="appsflyer-smart-banner"></div>
+    <div id="root"><div style="display:none"><svg xmlns="http://www.w3.org/2000/svg"><symbol id="cashback" viewBox="0 0 24 24"><path fill="currentColor" d="M14.357 9.917c2.17 0 3.929-1.772 3.929-3.959C18.286 3.772 16.527 2 14.357 2S10.43 3.772 10.43 5.958c0 2.187 1.759 3.959 3.928 3.959Z"></path><path fill="currentColor" d="M21.154 10.732a2.114 2.114 0 0 0-.967.087l-4.36 1.465c-.197.063-.3.269-.26.475a3.497 3.497 0 0 1-.518 2.683l-.825 1.243a.772.772 0 0 1-.959.293l-5.5-2.375a.792.792 0 0 1-.416-1.037.782.782 0 0 1 1.029-.42l4.533 1.956s.126.055.22.063a.388.388 0 0 0 .33-.174l.283-.427c.338-.515.425-1.14.228-1.726a2.08 2.08 0 0 0-.267-.507 2.329 2.329 0 0 0-.48-.396L8.379 8.88a3.56 3.56 0 0 0-3.732-.031l-3.261 1.971a.785.785 0 0 0-.385.68v7.126c0 .253.118.49.33.641.204.15.464.19.707.111l2.106-.712 6.333 2.13c.408.134.825.205 1.257.205a3.97 3.97 0 0 0 2.373-.8l8.58-6.483a.805.805 0 0 0 .314-.634v-.087c0-1.1-.762-2.114-1.846-2.264Z"></path></symbol></svg><svg xmlns="http://www.w3.org/2000/svg"><symbol id="star" viewBox="0 0 24 24"><path fill="currentColor" d="M10.7 2.4a1.5 1.5 0 0 1 2.8 0l1.7 5c.2.6.8 1 1.4 1H22c1.4 0 2 2 .9 2.8l-4.3 3A1.5 1.5 0 0 0 18 16l1.7 5a1.5 1.5 0 0 1-2.4 1.7L13 19.6a1.5 1.5 0 0 0-1.8 0l-4.3 3c-1.2 1-2.8-.2-2.3-1.6l1.6-5a1.5 1.5 0 0 0-.5-1.7l-4.3-3.1a1.5 1.5 0 0 1 1-2.8h5.2a1.5 1.5 0 0 0 1.4-1l1.6-5Z"></path></symbol></svg><svg xmlns="http://www.w3.org/2000/svg"><symbol id="logo" viewBox="0 0 111 28"><path fill="currentColor" d="m0 9.78 5.05-3.76V22.2h6.17c2.32 0 3.94-1.5 3.94-3.69 0-2.18-1.62-3.68-3.94-3.68H7.83l4.33-4.33c1.2-1.2 1.46-1.95 1.46-2.78 0-1.65-1.28-2.82-3.3-2.82H0V.38h11.17c4.36 0 7.48 2.63 7.48 6.42 0 1.8-.38 3.16-1.73 4.51l-.9.9A7.39 7.39 0 0 1 20.18 19c0 4.55-3.64 7.7-8.76 7.7H0V9.8ZM22.94.39h5.04v5.56h-5.04V.4Zm0 10.45 5.04-3.76V26.7h-5.04V10.84Zm8.65 9.46V5.96l5.04-3.91v5.4h5.5v4.71h-5.5v7.6c0 1.39.86 2.25 2.25 2.25h3.24v4.7h-4.17c-3.95 0-6.36-2.4-6.36-6.4ZM51.32 7.45h3.39v4.7h-3.23c-1.4 0-2.26.86-2.26 2.26v12.3h-5.04V14.6c0-4.6 2.56-7.15 7.14-7.15Zm3.69 9.63c0-5.45 3.8-10 9.85-10 6.02 0 9.85 4.2 9.85 10 0 .26 0 .52-.04.79H63.4l5.78-3.95a4.8 4.8 0 0 0-4.32-2.4c-3.24 0-5.15 2.52-5.15 5.56 0 3.76 2.4 5.56 5.34 5.56 1.73 0 3.27-.75 4.17-2.25h5.04c-1.31 4.4-5.19 6.69-9.21 6.69-5.26 0-10.04-3.31-10.04-10ZM84.45.39h5.68v4.7H84.6c-1.39 0-2.25.86-2.25 2.25v1.7h10.3V26.7H87.6V13.73h-5.27V26.7H77.3V7.53c0-4.6 2.57-7.14 7.15-7.14Zm12.34 3.52L101.83 0v26.7h-5.04V3.9Zm9.17 0L111 0v26.7h-5.04V3.9Z"></path></symbol></svg></div><a href="#main" class="_link_1slwf_1">Skip to content</a><div class="_wrapper_1707y_1 _vertical_1707y_26 _justify-start_1707y_62 _gap_1707y_6" style="--gap:var(--space-0);min-height:100vh"><noscript><div class="_container_1i2tf_1" data-nosnippet="data-nosnippet"><div><p><strong>Enable JavaScript to access this page</strong></p><p>For full functionality of this site it is necessary to enable JavaScript.<br/>Click the link below for instructions how to enable JavaScript in your browser</p><a class="_linkContainer_1dthb_1 _button_cxsmb_1 _button_1i2tf_29 _rounded_cxsmb_239 _primary_cxsmb_74" href="https://www.enable-javascript.com/" target="_blank" rel="noopener nofollow">Learn More</a></div><img src="/assets/noscript-ccxhy2Dx.png" class="_image_1i2tf_18" alt="noscript"/></div></noscript><div id="main"><div class="_page_17ved_1"><div class="_content_17ved_16"><a class="_linkContainer_1dthb_1 _logoLink_17ved_11" href="/" data-discover="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327.33 79.86" class="_logo_17ved_11" aria-label="Bitrefill"><g><path fill="currentColor" d="M.02,28.85l14.86-11.09v47.68h18.19c6.86,0,11.64-4.44,11.64-10.88s-4.77-10.88-11.64-10.88h-9.97l12.75-12.75c3.54-3.54,4.32-5.77,4.32-8.22,0-4.87-3.78-8.31-9.76-8.31H.02V1.12h32.93c12.87,0,22.06,7.76,22.06,18.95,0,5.32-1.12,9.31-5.11,13.3l-2.66,2.66c7.22,3.54,12.3,10.76,12.3,19.97,0,13.42-10.76,22.72-25.83,22.72H0V28.85h.02Z"></path><path fill="currentColor" d="M67.65,1.14h14.86v16.41h-14.86V1.14ZM67.65,31.96l14.86-11.09v57.87h-14.86V31.96Z"></path><path fill="currentColor" d="M93.15,59.89V17.55l14.86-11.54v15.96h16.19v13.87h-16.19v22.39c0,4.11,2.54,6.65,6.65,6.65h9.55v13.87h-12.3c-11.66,0-18.76-7.1-18.76-18.85Z"></path><path fill="currentColor" d="M151.35,21.96h9.97v13.87h-9.52c-4.11,0-6.65,2.54-6.65,6.65v36.26h-14.86v-35.69c0-13.53,7.55-21.09,21.06-21.09Z"></path><path fill="currentColor" d="M162.23,50.36c0-16.08,11.21-29.49,29.04-29.49s29.04,12.42,29.04,29.49c0,.78,0,1.54-.12,2.33h-33.24l17.07-11.64c-2.54-4.32-6.89-7.1-12.75-7.1-9.55,0-15.2,7.43-15.2,16.41,0,11.09,7.1,16.41,15.74,16.41,5.11,0,9.64-2.21,12.3-6.65h14.86c-3.87,12.96-15.29,19.73-27.16,19.73-15.51,0-29.59-9.76-29.59-29.49Z"></path><path fill="currentColor" d="M249.04,1.14h16.74v13.87h-16.29c-4.11,0-6.65,2.54-6.65,6.65v4.99h30.37v52.12h-14.86v-38.28h-15.53v38.25h-14.86V22.2c.02-13.53,7.57-21.06,21.09-21.06Z"></path><path fill="currentColor" d="M285.42,11.54l14.86-11.54v78.72h-14.86V11.54Z"></path><path fill="currentColor" d="M312.46,11.54l14.86-11.54v78.72h-14.86V11.54Z"></path></g></svg></a><span class="sm-medium _badge_17ved_31">The Commerce Layer for AI Agents</span><h1 class="xl-bold _headline_17ved_38">Your agents can buy anything</h1><p class="sm-medium _subtitle_17ved_44">Bitrefill gives AI agents real-world purchasing power. 10,000+ digital products across 180+ countries, all on crypto-native rails. No KYC. No credit cards. No friction.</p><div class="_codeBlock_17ved_49" role="button" tabindex="0" aria-label="Copy install command"><code class="_codeText_17ved_68">Set up bitrefill.com/agents/SKILL.md</code><button class="_copyButton_17ved_77" type="button" aria-label="Copy to clipboard"><span style="display:flex;opacity:1;transform:none"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></span></button></div><div class="_divider_17ved_95"><div class="_dividerLine_17ved_103"></div><span class="sm-medium">or add as an MCP server in</span><div class="_dividerLine_17ved_103"></div></div><div class="_platforms_17ved_109"><a href="https://claude.ai/new?q=Guide%20me%20in%20configuring%20the%20Bitrefill%20MCP%20server%20(&#x27;https%3A%2F%2Fapi.bitrefill.com%2Fmcp&#x27;)%20with%20OAuth.%20Start%20by%20reading%20the%20official%20MCP%20docs%20(&#x27;https%3A%2F%2Fdocs.bitrefill.com%2Fdocs%2Fecommerce-mcp&#x27;)%20and%20the%20official%20Claude%20Chat%20guides%20on%20installing%20and%20using%20MCP%20servers%20given%20my%20current%20plan." class="_platformButton_17ved_117" target="_blank" rel="noopener noreferrer"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="_platformIcon_17ved_140"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"></path></svg><span class="sm-medium">Claude</span></a><a href="https://chat.openai.com/?q=Guide%20me%20in%20configuring%20the%20Bitrefill%20MCP%20server%20(&#x27;https%3A%2F%2Fapi.bitrefill.com%2Fmcp&#x27;)%20with%20OAuth.%20Start%20by%20reading%20the%20official%20MCP%20docs%20(&#x27;https%3A%2F%2Fdocs.bitrefill.com%2Fdocs%2Fecommerce-mcp&#x27;)%20and%20the%20official%20ChatGPT%20guides%20on%20installing%20and%20using%20MCP%20servers%20given%20my%20current%20plan." class="_platformButton_17ved_117" target="_blank" rel="noopener noreferrer"><svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="_platformIcon_17ved_140"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"></path></svg><span class="sm-medium">ChatGPT</span></a></div><p class="sm-medium _subtitle_17ved_44">Powering permissionless commerce since 2014.<br/>Your agents are the next customer.</p><div class="_platforms_17ved_109"><a href="https://www.bitrefill.com/" class="_docsButton_17ved_146" target="_blank" rel="noopener noreferrer"><span class="sm-medium">Browse the Catalog</span></a><a href="https://docs.bitrefill.com/docs/ecommerce-mcp" class="_docsButton_17ved_146" target="_blank" rel="noopener noreferrer"><span class="sm-medium">View Integration Guide</span></a><a href="https://github.com/bitrefill/agents" class="_docsButton_17ved_146" target="_blank" rel="noopener noreferrer"><span class="sm-medium">View on GitHub</span></a></div><p class="_bodyMedium_af6be_41 _terms_17ved_163">By using the Bitrefill MCP server, you agree to the <a href="/terms" class="_termsLink_17ved_169">Terms of Use</a>.</p></div></div></div></div><ul class="_list_ymvzc_1 _removeTopPadding_ymvzc_20"></ul></div>
+    <div id="modal"></div>
+    <script nonce="PvLozBVP97eEfOX47hEHAA==">
+      // redux size 2818
+      window.__redux_state = {"cart":{"cart_id":null,"cart_items":[],"balance_only":false,"payment_methods_info":{},"selectedPaymentMethod":undefined,"isGiftModeEnabled":false,"isGiftSaving":false},"cartCouponInfo":null,"authentication":{"user":{},"state":"LOGGED_OUT"},"account":{"pending":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"balance":null,"verification":null,"payments":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"commission":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"wishlists":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"transactions":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"archivedTransactions":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"currency":"XBT","withdrawalStatus":{"status":"","message":""},"exportStatus":{"status":"not_requested"},"commissions":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0}},"newRefill":{"batchRefillsUpload":{"status":"not_uploaded"}},"ui":{"globalMessage":null,"historyIndex":0,"cartWidgetOpen":false,"searchActive":false,"hamburgerNavOpen":false,"themeKey":null,"paymentCurrency":"USD","cioSegments":undefined,"utmCampaign":undefined},"notifications":[],"search":{"isLoaded":undefined,"isLoading":false,"error":null,"items":[],"page":0,"nbPage":0},"omni":{"isLoading":false,"error":null,"result":null},"country":{"geo":{"names":["Japan"],"slugs":["japan"],"languages":["ja","en"],"emoji":"🇯🇵","prio":1,"alpha2":"JP","memberof":[]}},"widget":null,"operator":{"isLoading":false,"error":null,"result":null},"order":{"isLoading":false,"error":null,"result":null},"invoice":{"isLoading":false,"error":null,"result":null},"card":{"showOnboarding":undefined,"showTopUp":false,"showTransferFunds":false,"showCreateCard":false,"showVirtualCardWelcomeDialog":false,"showAnonymousCardActivatedDialog":false,"loading":false,"isLoadingTransactions":false,"settingUpAccount":false,"smsCodeSent":false,"onboardingStep":"name-step","openTab":"VIRTUAL","userHasPickedCard":false,"firstName":"","lastName":"","email":"","mobile":{"countryCode":"","number":""},"address":{"addressLine1":"","postalCode":"","city":"","country":""},"dateOfBirth":{"year":0,"month":0,"day":0},"selfPepDeclaration":false,"occupation":"","sourceOfFunds":"","sourceOfFundsOther":"","purposeOfAccount":"","purposeOfAccountOther":"","expectedOutgoingTxVolumeYearly":"","expectedIncomingTxVolumeYearly":"","placeOfBirth":"","cashOut":{"iban":"","bic":""},"cardJustCreated":false,"loaded":false,"transactionFilters":{"status":"all","minAmount":0,"maxAmount":15000},"transactionPagination":{"pageSize":20,"pageNum":1,"total":0},"hideBalance":false}};
+      window.__locale = "en";
+      window.__i18n_chksums = {"en":{"card":"48d117efd147225bb09671d2ada3749d","esim":"ea55e7173057d3af11603d506a87c326","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"53315fe50188b1a5e0cc9e5def902492","website":"378b9b684e7c6be6d7d8f318c23dd47f","widget":"f25f52421abcc0cb833fa48bfed9efef"},"ru":{"card":"6450d5c5591dc5bc87be0d6435b65ee9","esim":"f0902d86a3f34e168208e2aa17227ee9","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"1120e7340c2a1d565c3535a7f8577c95","website":"f631de44874a938ac6c322ebb8eedd67","widget":"47b31f1ec58ea7411c689db2373d0c1c"},"fr":{"card":"61c69b8713fd173849937b4c20777869","esim":"fc3ac3e25f930be6d663f89371fc9300","swap":"0471adfa7c8e2926d5f7588042b58585","unseal_modal":"58cdea0ab7c9e436f3e0dbd2001e9545","website":"b238c4f851f1102b28bdba4cd06e3ccc","widget":"4ac3aeba66879af5c349a4268c71a242"},"es":{"card":"9b2c6f4422beca19163559546aa954fe","esim":"98f42156ddf332682ff46d27ce0b9daa","swap":"cd4064e1ccc1770c6b336ae2225e6bbb","unseal_modal":"31b50c1182c47f67d9f7ab12ce2d4ec9","website":"227ee4c7f4f9b518b5c0192a8d01ad4b","widget":"69b35722daf631478af5a1946d9a270f"},"de":{"card":"23da28ade903ce5fdc8f344aeb1347a3","esim":"1ef3c2fde7027b1c984e1e451636763e","swap":"745d5b073d3b982c7074d4a718c725a2","unseal_modal":"257397d6d951199da28003bf39c44500","website":"6ad6a07b44da007b49786726dfc9750b","widget":"9d468848449b3ded29c642a81756a7b0"},"it":{"card":"d3a7c76f7113423dba242fbe2ee2207c","esim":"1431bb42afbb87ab490827c8374f1f7d","swap":"5089e3b875f4d51dadfb7fc2482eb4cc","unseal_modal":"2f4eced63c70154c707afb824440d5cb","website":"0fcf1269dda5f97f691daa25cc22ef35","widget":"064839669c14466134b2dff6bfc44142"},"nl":{"card":"ecef233e9eddf083c2471c138a00f903","esim":"6027d5fdc0266c23e5e47b23aeac04da","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"ee0e3ba853eec2c79c9797523c6c4017","website":"4033a25052d2fff9d71a2a27c9637105","widget":"80335271d31a1f7b64b3f4c8b9d7a49c"},"pt":{"card":"358898114624750f8b0509fc56441391","esim":"d74a1c1e7d20158466dee3a6ed0b7f01","swap":"229c96f268dc76e99a03799e75457a0f","unseal_modal":"35c26c2aa5cae674a07e9895b730437d","website":"788851ad96c9d12c4d7c6c004b17041a","widget":"6f9501913a4742d76122aba38fb534d3"},"vi":{"card":"0d64f8a212fbb7c574955b28916df5d6","esim":"ea5949b7198881a98fa6bf390de017fe","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"ab54149ed6bd6fe9f5e8b413691006f6","website":"58bcb6297dbbc51e12fdfac6d683343d","widget":"e5b8954d07e817e34146a5f22d8f30bc"},"ko":{"card":"f2a81cf642241219fa00e9b202383d9b","esim":"c8ff8b6cac5d6d7cff5b6456e36b3996","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"53315fe50188b1a5e0cc9e5def902492","website":"94fcd56fbb543a59f9dc0b231b0fa421","widget":"17cb88f99c8c9daf5ec0d73bfeabda89"},"ja":{"card":"a07e65ca895cd13e6aabe5b6f4d5c97f","esim":"87697d50d4542fb189a55789b38edddc","swap":"32f8cb1d17241917411885d6117e33be","unseal_modal":"53315fe50188b1a5e0cc9e5def902492","website":"73926c677313c0986127176a2c2e87ab","widget":"b6056cbdd90c1f16d81737023b4e8596"},"zh-Hans":{"card":"4f6423fded2638adfbaae1fc998eabe2","esim":"63fb2463ae956517e81fea9ff7db912f","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"dd92521934ee0437ba079e1b080578b8","website":"574d444ff01203cfdc30977a7ad3e518","widget":"18378586d4cc8c3d5e559052716915d0"},"pl":{"card":"3cfb5996d7e54ae8a4ee79692071c2f4","esim":"09b568de5838c8609ae690abd7aa515b","swap":"a2d39d3d9a8029d6a9f6ba948cfc8bec","unseal_modal":"68952ad5d852e3de7a14458495b61884","website":"beb1c1d41e20c281e7cbc64a3fff84d9","widget":"3b656af1c149773693bdf6390ef2667c"},"uk":{"card":"0f9c78bc095298858c6faee11c665462","esim":"4be37b26e1b7d9c26fd2309e93e2756c","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"7474759faa0fe19577dffafc9cd3d508","website":"721c3ef1b23dbe8a0c507aaef20f62b5","widget":"7858b4e9e4665f9ad17bd0dd6a743d11"},"tr":{"card":"c90201085321794758bbfea08bde8967","esim":"592e98a2fd2186bc7d0821f8ba6dc30b","swap":"adde3aaee39e111799a88f691f4c9ffe","unseal_modal":"af171660cf448dbd5c6133c7ae61975e","website":"0653e24d7ba975b0e9892711b0bfa73e","widget":"53eb5e3f31f343c86d5b0a4ea0b472b0"}};
+      window.__consent = {"value":{"ad_storage":false,"analytics_storage":false,"functionality_storage":true,"personalization_storage":false,"ad_personalization":false,"ad_user_data":false},"collected":false,"version":4};
+      window.__nonce = "PvLozBVP97eEfOX47hEHAA==";
+      window.__auth = false;
+      window.__brid = "6a1291103a15b0ffff0003cd";
+      window.__accept_language = undefined;
+      window.__isfirst = true;
+      window.__dnt = false;
+      window.__commit_hash = "ee52799d06fb3472f54142268551a05bd4becfed";
+      window.__cacheable = false;
+      window.__dehydratedTanState = {"mutations":[],"queries":[]};
+      
+      window.__embed = undefined;
+    </script>
+    
+    <script nonce="PvLozBVP97eEfOX47hEHAA==">beacon('endbody');</script>
+    <link rel="preload" href="/assets/urlstructure-CnhzkmQg.js" as="script" crossorigin="anonymous" />
+<link rel="preload" href="/assets/api-client-CBsobsAi.js" as="script" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/defineProperty-Cfx7ABcM.js" crossorigin="anonymous" />
+<link rel="preload" href="/assets/Text-V_41vYAY.js" as="script" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useQuery-B8FZiqa6.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/jsx-runtime-KMRACxZW.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/utils-hIWdolSW.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useInfiniteQuery-FhtXMmnm.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/queryOptions-DbnOXI51.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/classnames-DW5ZyXoA.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-C83Z4Q9F.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/lib-C1nxEnBx.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/string-B-m2tv6k.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/CountryState-YPFFIqAH.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/cart-CfLg1rBL.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/account-DS1aJzh8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/account-B8t8Njg_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/redux-toolkit.modern-BgN9bWxF.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/mutationOptions-DboEiUQD.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/notifications-DYHHRtb6.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/rest-helpers-J5nS7YB6.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/account-DBp026iI.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/account-JuEv7QDp.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Header-uVVDthNs.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-CqyuWFfO.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-CeaMz6tC.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/react-dom-XWYroWKh.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-CEZqIsQ4.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-CgROMEA8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-QE3hQgfa.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-BWRoU_po.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/es2015-JanMmlFZ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/tslib.es6-D0oT0Pr9.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-D7wFiIUF.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-CT2rUYWU.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-BdrBOhq7.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-mbfr--qp.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/floating-ui.react-dom-CsHL2k1Q.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-DkFg-LhX.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-utesRl0M.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-_zlwnz5z.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/debounce-HggUiF0l.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/toNumber-BWL2NUYp.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/createLucideIcon-BZcYdIi0.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/arrow-right-DlvSe5c8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/chevron-left-B4Za6oDu.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/circle-question-mark-Ciw1ClcC.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/shopping-cart-wE3LbxbD.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/proxy-BWIXAc0N.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/emotion-is-prop-valid.esm-o0lv_g3F.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/AnimatePresence-Cmgcgdow.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/use-reduced-motion-B9U4c2z6.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/SearchSorting-ctDl_Xq-.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/ui-14QHihvS.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/constants-DTQs8Odg.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Alert-C2aSeipc.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/star-BQYq3dvM.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/x-pAmoACIx.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Button-OTkZBeVe.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Flex-B5h-aiAG.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/object.omit-Cde470h8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Link-CeQ3KPal.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Spinner-DsLudfim.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Spacer-0ZXHuvym.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Stack-BASP6wKQ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/translation-BfIJs0XB.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/base-BpUaZ8-M.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/chevron-left-Df832Czh.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/chevron-right-CxejemjW.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/circle-help-BH_F3h3K.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/credit-card-D8toghnO.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/gift-CUqmnY2U.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/logo-BMlLFsgC.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/trash-2-bgdVoVPS.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Image-DgjS_uMW.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/cloudinary2-CTp0Ppy_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Backdrop-c-NG7mjW.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Counter-BLdvS0yS.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/EmptyState-Dvy5P0xs.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/PageContainer-Bo3iP7er.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/PreferencesButton-C0i6D9we.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Skeleton-CgwHYMdN.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/cart-Bqa7mLY9.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/card-D7E4f4o2.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/constants-CZykPY23.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/RewardsBanner-BUyPQgYl.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Card-B2CZbLG-.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/SvgImg-C-zkAEhs.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Tag-zmZtyzN8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Input-B-UDgEBV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/FormControlWrapper-D_rfNTpc.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Popover-DuGz2f_x.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/chevron-down-CJAcVQzC.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/canonicals-rDyVdOmV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/category-order-C_N5Y6sh.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/hideForUtm-DWz3PfCP.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/striga-CA6vRnXH.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/SuggestedCountryPopover-Ckdwie4q.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Combobox-BULAXpUa.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Command-BSIBGY_o.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/extends-w3VGuOG5.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/search-ChzFRgHJ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Notice-NdF737Ii.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/circle-alert-DyIUF4Vo.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/circle-check-big-DlNG9cIS.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/info-CTyG7uCT.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/triangle-alert-CbJWin-4.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/UserMenu-DCHBWpQV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Avatar-Ctl99huJ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-BIwIpXot.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dist-DI1QdG15.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Money-C4JZVnCe.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/index.module-Cceci7s0.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/lazyPreload-DPVQ3f5D.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/errors-p4QOKzI4.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/route-helpers-CKwJjXPt.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/billCountries-svoG62R6.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/auth-BmLScxnP.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/authentication-CyM3LkZu.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useMutation-CpfM7AUx.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/queryClient-hoPLZXJJ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useQueries-DBAVNa6v.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/startOfDay-YGxQ4kGD.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/invoice-B9SDhmJR.js" crossorigin="anonymous" />
+<link rel="preload" href="/assets/parse-Dc4Tz8N8.js" as="script" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/embedded-session-CMbwSnwr.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/contracts-DNUTVPHV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/abis--ZpYmEFy.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/fetchUserData-CYsDXK5M.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/LiveDataSubscription-B4nDipQ_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/react-router-navigate-CQJAhQTz.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/constants-DPSPZfKP.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useCard-DGLV8wiF.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useCardUserInfo-C5bR73lO.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useKycStatus-Bj4SsCxy.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/invoice-C4KoOw4z.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/prepayment-steps-3xTo27Rn.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/getSelectedPaymentMethodUnit-B6V7S7P6.js" crossorigin="anonymous" />
+<link rel="preload" href="/assets/URLStructureRouter-CF1tVGtm.js" as="script" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/bitrefill-card-K7zRLcoU.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/index.module-bU9CotBz.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/prop-types-BnIBVTNY.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/withTranslation-BBxL-3oz.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/contract-4PokY5C9.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/getAbiItem-dYGhdk7_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/isAddress-JJLvRUBc.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/sha3-DuxsJIMw.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/_u64-k6gx26Gi.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/utils-CCjMm9Yf.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/stringify-DZsB4wT8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/formatGwei-CXA9JLi_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/formatUnits-CW3GNrDR.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/rpc-DIfxthbv.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/uid-B_EEBDq_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/LandingFooter-7txPvXin.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/dot-prop-B_pj1Gu_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/MobileStoreLinks-DC0BaOTj.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/AcceptedPaymentMethods-BkC6uj2w.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/lightning-logo-B1DQd5OM.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/bitcoin-maxi-mode-BLx2cjK8.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/fiat-only-mode-CrcQ4y1c.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useShouldShowFiatPayments-DCZ_c78a.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/experiments-CICByFVJ.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/u_x-D43DLzZB.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Divider-BAeEGh6Z.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/StatusText-DJLvYvjw.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/ThemeToggle-BizfqfM5.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/styles-DsImplTV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/theme-B0uEXxe3.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/link-helpers-DxoQlSfv.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/misc-NMUZCFpU.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/validate-Cl2wl6T9.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/SkipNavContent-BCRfX5uG.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/Notifications-DF-Xcun_.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/SiteHelmet-v6Pt0pm0.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/LandingSection-D0moUdqx.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useEvmQrCodeExperiment-BLCrpDYR.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useModulePreloadedData-CdHANJ8h.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useModulePreload-CnjNeW_i.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/ChainIcon-Bz44Qshe.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/ethereum-logo-DbZnZ7R-.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/solana-dark-DuGjUJUw.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/sui-icon-9X9ZtpLV.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/useWalletEvents-g_UGzQ-H.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/mitt-C7O_Awm0.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/types-DlsAk1to.js" crossorigin="anonymous" />
+<link rel="modulepreload" href="/assets/getWalletIcon-BO0OcB6e.js" crossorigin="anonymous" />
+    
+  </body>
+</html>

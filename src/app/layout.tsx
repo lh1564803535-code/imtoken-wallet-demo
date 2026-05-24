@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ToastProvider } from "@/components/toast";
+import { ThemeProvider } from "@/components/themes";
+import { ErrorBoundary } from "@/components/error-boundary";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "imToken Wallet Demo — 10th Anniversary",
+  title: "AI Agent Wallet — Experience Crypto in Color",
   description:
-    "Your Digital World, Under Your Control. Browser-native wallet powered by Token Core.",
+    "Fun, powerful, and secure wallet. Your Digital World, Under Your Control.",
   icons: {
     icon: "/favicon.svg",
   },
@@ -30,7 +33,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-white">
-        {children}
+        <ToastProvider>
+          <ThemeProvider>
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </ThemeProvider>
+        </ToastProvider>
       </body>
     </html>
   );

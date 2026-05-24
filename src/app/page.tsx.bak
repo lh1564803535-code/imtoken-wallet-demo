@@ -1,0 +1,453 @@
+﻿"use client";
+
+import { useState } from "react";
+import { CreateWallet } from "@/components/create-wallet";
+import { ImportWallet } from "@/components/import-wallet";
+import { SignMessage } from "@/components/sign-message";
+import { WalletSecurity } from "@/components/wallet-security";
+import { AIIntent } from "@/components/ai-intent";
+import { ShopTab } from "@/components/bitrefill/ShopTab";
+import { Wallet, Download, Shield, Gift, Clock, Users, Plus, Home, Compass, User, Send, QrCode, ArrowLeftRight, Sparkles, ChevronRight, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import type { WalletData, ChainAddress } from "@/lib/tcx";
+import type { PurchaseIntent } from "@/types/bitrefill";
+
+function WelcomePage({ onCreate, onImport }: { onCreate: () => void; onImport: () => void }) {
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-12 bg-gradient-to-b from-blue-50 to-white">
+        <div className="relative mb-8">
+          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-lg">
+            <Wallet className="w-12 h-12 text-white" />
+          </div>
+          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-red-400 to-orange-400 rounded-xl flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Agent Wallet</h1>
+        <p className="text-gray-500 mb-12">Your Digital World, Under Your Control</p>
+        <div className="w-full max-w-sm space-y-3">
+          <button onClick={onCreate} className="w-full bg-blue-500 text-white py-4 rounded-2xl font-semibold text-lg">Create New Wallet</button>
+          <button onClick={onImport} className="w-full bg-white text-gray-900 py-4 rounded-2xl font-semibold text-lg border-2 border-gray-200 flex items-center justify-center gap-2">
+            <Download className="w-5 h-5" /> Import Existing Wallet
+          </button>
+        </div>
+      </div>
+      <div className="px-6 py-8 bg-white border-t">
+        <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
+          <div className="flex items-center gap-1"><Shield className="w-3.5 h-3.5" /><span>Local Encryption</span></div>
+          <span>ETH / BTC / TRON</span>
+          <span>Token Core</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BackupPage({ onComplete }: { onComplete: () => void }) {
+  const [step, setStep] = useState(1);
+  const mnemonic = ["abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract", "absurd", "abuse", "access", "accident"];
+  const [hidden, setHidden] = useState(true);
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="px-6 py-4 flex items-center border-b">
+        <div className="w-8" />
+        <h1 className="flex-1 text-center text-lg font-semibold">Backup Mnemonic</h1>
+        <div className="w-8" />
+      </div>
+      <div className="flex-1 px-6 py-6">
+        {step === 1 && (
+          <>
+            <div className="text-center mb-6">
+              <Shield className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold mb-2">Securely Backup Your Mnemonic</h2>
+              <p className="text-gray-500 text-sm">Mnemonic is the only way to recover your wallet</p>
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+              <p className="text-sm text-yellow-800"><strong>Important:</strong> Do not take screenshots, share online, or lose this.</p>
+            </div>
+            <button onClick={() => setStep(2)} className="w-full bg-blue-500 text-white py-4 rounded-xl font-semibold">I Understand, Start Backup</button>
+          </>
+        )}
+        {step === 2 && (
+          <>
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-gray-500">Your Mnemonic</span>
+                <button onClick={() => setHidden(!hidden)} className="flex items-center gap-1 text-sm text-blue-500">
+                  {hidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  {hidden ? "Show" : "Hide"}
+                </button>
+              </div>
+              {hidden ? (
+                <div className="bg-gray-50 rounded-xl p-8 text-center"><p className="text-gray-500">Click Show to view mnemonic</p></div>
+              ) : (
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="grid grid-cols-3 gap-2">
+                    {mnemonic.map((word, i) => (
+                      <div key={i} className="bg-white rounded-lg p-2 text-center border">
+                        <span className="text-xs text-gray-400 mr-1">{i + 1}.</span>
+                        <span className="text-sm font-medium">{word}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <button onClick={() => setStep(3)} className="w-full bg-blue-500 text-white py-4 rounded-xl font-semibold">Next</button>
+          </>
+        )}
+        {step === 3 && (
+          <>
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-xl font-bold mb-2">Confirm Backup Complete</h2>
+              <p className="text-gray-500 text-sm">Make sure you have written down the mnemonic</p>
+            </div>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+              <p className="text-sm text-red-700 text-center">Lost mnemonic = Lost all assets forever</p>
+            </div>
+            <button onClick={onComplete} className="w-full bg-blue-500 text-white py-4 rounded-xl font-semibold">I Have Backed Up Safely, Enter Wallet</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HeritagePage({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="bg-white min-h-screen px-4 py-6">
+      <div className="flex items-center gap-3 mb-6">
+        <button onClick={onBack} className="p-2"><ArrowLeft className="w-5 h-5" /></button>
+        <h1 className="text-xl font-bold">Heritage Wallet</h1>
+      </div>
+      <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-5 text-white mb-6">
+        <div className="flex items-center gap-2 mb-2"><Gift className="w-5 h-5" /><span className="font-medium">Total Heritage</span></div>
+        <p className="text-3xl font-bold mb-1">2.5 ETH</p>
+        <p className="text-sm opacity-80">Approximately ,875.00</p>
+      </div>
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-500">Beneficiaries</h2>
+          <button className="text-blue-500 text-sm font-medium flex items-center gap-1"><Plus className="w-4 h-4" />Add</button>
+        </div>
+        <div className="space-y-2">
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2"><Users className="w-4 h-4 text-purple-500" /><span className="font-medium">Son</span></div>
+              <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
+            </div>
+            <p className="text-sm text-gray-500">0x1234...5678</p>
+            <p className="text-sm text-gray-500">0.1 ETH/month</p>
+          </div>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2"><Users className="w-4 h-4 text-purple-500" /><span className="font-medium">Parents</span></div>
+              <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">Active</span>
+            </div>
+            <p className="text-sm text-gray-500">0x8765...4321</p>
+            <p className="text-sm text-gray-500">0.5 ETH/quarter</p>
+          </div>
+        </div>
+      </div>
+      <div className="bg-blue-50 rounded-xl p-4">
+        <div className="flex items-start gap-2">
+          <Clock className="w-5 h-5 text-blue-500 mt-0.5" />
+          <div>
+            <p className="font-medium text-gray-900">Smart Contract Timed Release</p>
+            <p className="text-sm text-gray-500">Funds locked in smart contract, auto-released to beneficiaries</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MainApp({ wallet, chainAddresses, purchaseIntent }: { wallet: WalletData | null; chainAddresses: ChainAddress[]; purchaseIntent: PurchaseIntent | null }) {
+  const [activeTab, setActiveTab] = useState("home");
+  const [subPage, setSubPage] = useState<string | null>(null);
+  const [showBalance, setShowBalance] = useState(true);
+
+  const tabs = [
+    { id: "home", label: "Home", icon: Home },
+    { id: "discover", label: "Discover", icon: Compass },
+    { id: "profile", label: "Profile", icon: User },
+  ];
+
+  if (subPage === "heritage") return <HeritagePage onBack={() => setSubPage(null)} />;
+  if (subPage === "create") return <CreateWallet onWalletCreated={() => setSubPage(null)} wallet={wallet} />;
+  if (subPage === "import") return <ImportWallet onWalletImported={() => setSubPage(null)} wallet={wallet} />;
+  if (subPage === "sign") return <SignMessage wallet={wallet} />;
+  if (subPage === "security") return <WalletSecurity wallet={wallet} />;
+  if (subPage === "shop") return <ShopTab wallet={wallet} addresses={chainAddresses} onNavigate={setSubPage} purchaseIntent={purchaseIntent} />;
+  if (subPage === "ai") return <AIIntent wallet={wallet} onNavigate={setSubPage} onAction={() => {}} />;
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1 pb-20">
+        {activeTab === "home" && (
+          <div className="bg-white min-h-screen">
+            <div className="bg-gradient-to-b from-blue-500 to-blue-600 px-6 pt-12 pb-8 text-white">
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-lg font-medium opacity-90">Total Assets</h1>
+                <button onClick={() => setShowBalance(!showBalance)} className="p-2">
+                  {showBalance ? <Eye className="w-5 h-5 opacity-70" /> : <EyeOff className="w-5 h-5 opacity-70" />}
+                </button>
+              </div>
+              <div className="text-center">
+                <p className="text-4xl font-bold mb-1">{showBalance ? ",345.67" : "****"}</p>
+                <p className="text-sm opacity-80">+2.34% (24h)</p>
+              </div>
+              <div className="flex justify-center gap-4 mt-8">
+                <button className="flex flex-col items-center gap-1">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><Send className="w-5 h-5" /></div>
+                  <span className="text-xs">Send</span>
+                </button>
+                <button className="flex flex-col items-center gap-1">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><QrCode className="w-5 h-5" /></div>
+                  <span className="text-xs">Receive</span>
+                </button>
+                <button className="flex flex-col items-center gap-1">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"><ArrowLeftRight className="w-5 h-5" /></div>
+                  <span className="text-xs">Swap</span>
+                </button>
+              </div>
+            </div>
+            <div className="px-4 py-4">
+              <h2 className="text-sm font-semibold text-gray-500 mb-3 px-2">Assets</h2>
+              <div className="bg-white rounded-2xl shadow-sm border divide-y">
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-600">ET</div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Ethereum</p>
+                      <p className="text-sm text-gray-400">0.5 ETH</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900">,345.67</p>
+                    <p className="text-sm text-green-500">+1.23%</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm bg-orange-500">BT</div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Bitcoin</p>
+                      <p className="text-sm text-gray-400">0.001 BTC</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900">,000.00</p>
+                    <p className="text-sm text-green-500">+0.89%</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm bg-red-500">TR</div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Tron</p>
+                      <p className="text-sm text-gray-400">500 TRX</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900">.00</p>
+                    <p className="text-sm text-red-500">-0.56%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="px-4 py-2">
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-4 text-white cursor-pointer" onClick={() => setSubPage("heritage")}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Gift className="w-6 h-6" />
+                    <div>
+                      <p className="font-semibold">Heritage Wallet</p>
+                      <p className="text-sm opacity-80">Smart Contract Custody</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 opacity-70" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === "discover" && (
+          <div className="bg-white min-h-screen px-4 py-6">
+            <h1 className="text-2xl font-bold mb-6">Discover</h1>
+            <div className="space-y-3">
+              <div className="bg-orange-50 rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSubPage("shop")}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🎁</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">Gift Card Shop</p>
+                    <p className="text-sm text-gray-500">29 popular gift cards</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-blue-50 rounded-xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📱</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">eSIM Service</p>
+                    <p className="text-sm text-gray-500">11 countries worldwide</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-purple-50 rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSubPage("ai")}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🤖</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">AI Assistant</p>
+                    <p className="text-sm text-gray-500">Intent-driven trading</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSubPage("security")}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🛡️</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">Security Center</p>
+                    <p className="text-sm text-gray-500">Anti-blind-sign protection</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-pink-50 rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setSubPage("heritage")}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🎁</span>
+                  <div>
+                    <p className="font-semibold text-gray-900">Heritage Wallet</p>
+                    <p className="text-sm text-gray-500">Smart contract custody</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === "profile" && (
+          <div className="bg-white min-h-screen">
+            <div className="bg-gradient-to-b from-blue-500 to-blue-600 px-6 pt-12 pb-8 text-white">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                  <User className="w-8 h-8" />
+                </div>
+                <div>
+                  <p className="font-semibold text-lg">My Wallet</p>
+                  <p className="text-sm opacity-80">0x1234...5678</p>
+                </div>
+              </div>
+            </div>
+            <div className="px-4 py-4 space-y-2">
+              <div className="bg-white rounded-xl p-4 flex items-center justify-between border cursor-pointer" onClick={() => setSubPage("create")}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <Wallet className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Wallet Management</p>
+                    <p className="text-xs text-gray-400">Create/Import/Switch</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-white rounded-xl p-4 flex items-center justify-between border cursor-pointer" onClick={() => setSubPage("security")}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Security Settings</p>
+                    <p className="text-xs text-gray-400">Password/Biometrics</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-white rounded-xl p-4 flex items-center justify-between border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Transaction History</p>
+                    <p className="text-xs text-gray-400">View all transactions</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="bg-white rounded-xl p-4 flex items-center justify-between border cursor-pointer" onClick={() => setSubPage("heritage")}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <Gift className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Heritage Wallet</p>
+                    <p className="text-xs text-gray-400">Smart contract custody</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+      {["home", "discover", "profile"].includes(activeTab) && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t">
+          <div className="flex justify-around py-2">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={isActive ? 'flex flex-col items-center py-2 px-4 text-blue-500' : 'flex flex-col items-center py-2 px-4 text-gray-400'}>
+                  <Icon className="w-6 h-6" />
+                  <span className="text-xs mt-1">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
+    </div>
+  );
+}
+
+export default function Page() {
+  const [wallet, setWallet] = useState<WalletData | null>(null);
+  const [page, setPage] = useState<"welcome" | "backup" | "app">("welcome");
+  const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
+  const [purchaseIntent, setPurchaseIntent] = useState<PurchaseIntent | null>(null);
+
+  const handleWalletCreated = (w: WalletData) => {
+    setWallet(w);
+    setPage("backup");
+    import("@/lib/tcx").then(({ deriveMultiChainAddresses }) => {
+      deriveMultiChainAddresses(w.keystoreJson, w.password).then(setChainAddresses).catch(() => {});
+    });
+  };
+
+  const handleWalletImported = (w: WalletData) => {
+    setWallet(w);
+    setPage("app");
+    import("@/lib/tcx").then(({ deriveMultiChainAddresses }) => {
+      deriveMultiChainAddresses(w.keystoreJson, w.password).then(setChainAddresses).catch(() => {});
+    });
+  };
+
+  if (page === "welcome") {
+    return <WelcomePage onCreate={() => setPage("backup")} onImport={() => setPage("app")} />;
+  }
+
+  if (page === "backup") {
+    return <BackupPage onComplete={() => setPage("app")} />;
+  }
+
+  return <MainApp wallet={wallet} chainAddresses={chainAddresses} purchaseIntent={purchaseIntent} />;
+}

@@ -4,27 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Token UI 品牌色 */
-  --rk-accent: #007fff;
-  --rk-accent-color: #ffffff;
+  /* Rainbow 品牌色 */
   --background: #ffffff;
-  --foreground: #111d4a;
-  --card: #f8f9fa;
-  --card-foreground: #111d4a;
-  --primary: #007fff;
+  --foreground: #1a1a2e;
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+  --primary: #0052ff;
   --primary-foreground: #ffffff;
-  --secondary: #f0f2f5;
-  --secondary-foreground: #111d4a;
-  --muted: #f0f2f5;
-  --muted-foreground: #99a1af;
-  --accent: #007fff;
+  --secondary: #f5f6fa;
+  --secondary-foreground: #1a1a2e;
+  --muted: #f5f6fa;
+  --muted-foreground: #8e8e93;
+  --accent: #0052ff;
   --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --destructive: #ff3b30;
   --destructive-foreground: #ffffff;
-  --border: #e0e3e8;
-  --input: #e0e3e8;
-  --ring: #007fff;
-  --radius: 0.75rem;
+  --border: #f0f0f5;
+  --input: #f0f0f5;
+  --ring: #0052ff;
+  --radius: 1rem;
+
+  /* Rainbow 彩虹色板 */
+  --rainbow-red: #ff3b30;
+  --rainbow-orange: #ff9500;
+  --rainbow-yellow: #ffcc00;
+  --rainbow-green: #34c759;
+  --rainbow-blue: #007aff;
+  --rainbow-indigo: #5856d6;
+  --rainbow-purple: #af52de;
+
+  /* 代币涨跌色 */
+  --gain: #34c759;
+  --loss: #ff3b30;
 }
 
 @theme inline {
@@ -46,10 +57,42 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-gain: var(--gain);
+  --color-loss: var(--loss);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* === 响应式设计 === */
+
+/* 移动端安全区域 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-pb {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+  }
+}
+
+/* 桌面端居中约束 */
+@media (min-width: 640px) {
+  body {
+    background: #f5f6fa;
+  }
+  .min-h-screen {
+    max-width: 430px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
+    min-height: 100vh;
+  }
+}
+
+/* 平板端适配 */
+@media (min-width: 640px) and (max-width: 1024px) {
+  .min-h-screen {
+    max-width: 430px;
+  }
 }
 
 /* === 动画 === */
@@ -62,6 +105,140 @@
   animation: fade-in-up 0.4s ease-out forwards;
 }
 
+/* 隐藏滚动条 */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Rainbow 卡片交互 */
+.card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card-hover:active {
+  transform: scale(0.98);
+}
+.card-hover:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 数字跳动动画 */
+@keyframes number-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.animate-number-pop {
+  animation: number-pop 0.3s ease-out;
+}
+
+/* Token 列表逐项入场 */
+@keyframes token-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-token-in {
+  animation: token-slide-in 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+/* 弹性按压 */
+@keyframes spring-press {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.95); }
+  70% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+.animate-spring:active {
+  animation: spring-press 0.3s ease-out;
+}
+
+/* 余额脉冲 */
+@keyframes balance-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+.animate-balance-update {
+  animation: balance-pulse 0.5s ease-out;
+}
+
+/* 骨架屏闪烁 */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f5 25%, #e8e8ee 50%, #f0f0f5 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* 成就解锁闪光 */
+@keyframes achievement-unlock {
+  0% { transform: scale(0.95); opacity: 0; box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); }
+  50% { transform: scale(1.02); box-shadow: 0 0 20px 4px rgba(168, 85, 247, 0.3); }
+  100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(168, 847, 247, 0); }
+}
+.animate-achievement-unlock {
+  animation: achievement-unlock 0.6s ease-out forwards;
+}
+
+/* 传奇成就发光 */
+@keyframes legendary-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+}
+.animate-legendary {
+  animation: legendary-glow 2s ease-in-out infinite;
+}
+
+/* XP 弹出 */
+@keyframes xp-pop {
+  0% { opacity: 0; transform: translateY(0) scale(0.8); }
+  30% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-30px) scale(0.9); }
+}
+.animate-xp-pop {
+  animation: xp-pop 1s ease-out forwards;
+}
+
+/* 成功打勾动画 */
+@keyframes check-draw {
+  0% { stroke-dashoffset: 24; }
+  100% { stroke-dashoffset: 0; }
+}
+.animate-check {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-draw 0.4s ease-out 0.2s forwards;
+}
+
+/* 渐变文字 */
+.text-gradient {
+  background: linear-gradient(135deg, #ff3b30, #ff9500, #ffcc00, #34c759, #007aff, #5856d6, #af52de);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shake animation for verify errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* 页面进入动画 */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-page-enter {
+  animation: page-enter 0.3s ease-out forwards;
+}
+
 @keyframes slow-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -72,21 +249,43 @@
 
 @keyframes identity-gradient {
   0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
   50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
   100% { background-position: 0% 50%; }
 }
 .identity-gradient {
-  background: linear-gradient(135deg, #007fff, #0038ad, #0d9488, #007fff);
+  background: linear-gradient(135deg, #ff3b30, #ff9500, #ffcc00, #34c759, #007aff, #5856d6, #af52de, #ff3b30);
+  background-size: 400% 400%;
+  animation: identity-gradient 8s ease infinite;
+}
+
+/* Rainbow 主卡片渐变 */
+@keyframes rainbow-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.rainbow-gradient {
+  background: linear-gradient(135deg, #ff3b30 0%, #ff9500 16%, #ffcc00 33%, #34c759 50%, #007aff 66%, #5856d6 83%, #af52de 100%);
   background-size: 300% 300%;
-  animation: identity-gradient 3.6s ease infinite;
+  animation: rainbow-shift 6s ease infinite;
+}
+.rainbow-gradient-static {
+  background: linear-gradient(135deg, #ff3b30 0%, #ff9500 16%, #ffcc00 33%, #34c759 50%, #007aff 66%, #5856d6 83%, #af52de 100%);
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(0, 127, 255, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(0, 127, 255, 0.6); }
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 122, 255, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(0, 122, 255, 0.4); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Rainbow 卡片阴影 */
+.rainbow-shadow {
+  box-shadow: 0 4px 24px rgba(0, 122, 255, 0.12), 0 1px 4px rgba(0,0,0,0.04);
 }
 
 @keyframes address-reveal {
@@ -234,4 +433,50 @@
   background: radial-gradient(circle, rgba(255,255,255,0.95) 0 28%, rgba(255,255,255,0) 70%);
   box-shadow: 0 0 18px rgba(255,255,255,0.8);
   animation: twinkle 2.8s ease-in-out infinite;
+}
+
+/* Tab content transition */
+@keyframes tab-slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-tab-slide {
+  animation: tab-slide-in 0.2s ease-out forwards;
+}
+
+/* Toast slide in from top */
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-toast-in {
+  animation: toast-slide-in 0.3s ease-out forwards;
+}
+
+/* Skeleton loading */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.animate-skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: #f0f0f5;
+  border-radius: 8px;
+}
+
+/* Safe area padding for mobile */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Smooth press effect for all interactive elements */
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better focus styles */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
