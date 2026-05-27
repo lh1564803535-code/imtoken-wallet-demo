@@ -10,23 +10,7 @@ const API_BASE = '/api/bitrefill';
 
 // ============ API Helpers ============
 
-async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T | null> {
-  try {
-    let url = `${API_BASE}/${path}`;
-    if (params) {
-      const qs = new URLSearchParams(params).toString();
-      url += `?${qs}`;
-    }
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data ?? json;
-  } catch {
-    return null;
-  }
-}
-
-async function apiPost<T>(path: string, body: any): Promise<T | null> {
+async function apiPost<T>(path: string, body: Record<string, unknown>): Promise<T | null> {
   try {
     const res = await fetch(`${API_BASE}/${path}`, {
       method: 'POST',
@@ -39,24 +23,6 @@ async function apiPost<T>(path: string, body: any): Promise<T | null> {
   } catch {
     return null;
   }
-}
-
-// ============ Type Mapping ============
-
-function mapApiProduct(api: any): BitrefillProduct {
-  return {
-    id: api.id,
-    name: api.name,
-    description: api.description || '',
-    country: api.country || 'US',
-    category: api.category || 'other',
-    currency: api.currency || 'USD',
-    denominations: api.packages?.map((p: any) => p.value) || [25, 50, 100],
-    supportedCrypto: ['ETH', 'BTC', 'USDT'],
-    discount: api.discount || 0,
-    inStock: api.in_stock !== false,
-    imageUrl: api.image || undefined,
-  };
 }
 
 // ============ Mock Helpers ============
@@ -164,6 +130,15 @@ export async function getProductById(
   return { success: true, data: product };
 }
 
+interface BitrefillApiInvoice {
+  id: string;
+  status?: string;
+  payment_address?: string;
+  payment_amount?: string;
+  created_at?: string;
+  orders?: Array<{ id?: string; product_name?: string }>;
+}
+
 export async function createInvoice(
   productId: string,
   denomination: number,
@@ -171,7 +146,7 @@ export async function createInvoice(
 ): Promise<BitrefillResponse<BitrefillInvoice>> {
   // Try real API first (use test product for demo — free, no balance deducted)
   const useTestProduct = productId === 'test-gift-card-code' || productId === 'test-gift-card-link';
-  const realInvoice = await apiPost<any>('invoices', {
+  const realInvoice = await apiPost<BitrefillApiInvoice>('invoices', {
     products: [{
       product_id: useTestProduct ? productId : 'test-gift-card-code',
       value: denomination,
@@ -197,7 +172,7 @@ export async function createInvoice(
           chain,
           symbol: cryptoSymbolForChain(chain),
         },
-        status: realInvoice.status || 'pending',
+        status: (realInvoice.status as "pending" | "paid" | "complete" | "failed") || 'pending',
         createdAt: realInvoice.created_at || new Date().toISOString(),
       },
     };
@@ -234,7 +209,7 @@ export async function createInvoice(
 }
 
 export async function simulatePaymentSuccess(
-  invoice: BitrefillInvoice
+  _invoice: BitrefillInvoice
 ): Promise<{ code: string; pin?: string }> {
   // Use mock data for demo stability
   await delay(1500);

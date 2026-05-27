@@ -424,3 +424,17 @@
 ### 构建状态
 - `npm run build` 成功
 - 总代码量: 8234行(src目录)
+
+## Round 16 -- Bug Fixes: Hydration + Token Detail (2026-05-25)
+
+### What Changed
+1. **Hydration mismatch fix**: Replaced `loadingSaved` state with `mounted` pattern. Server and client now render identical initial HTML (loading state with WelcomePage-style structure), eliminating the React hydration error that prevented the page from loading.
+2. **Token Detail index bug fix**: Changed `selectedToken` from array index (`useState(0)`) to symbol string (`useState<string>("ETH")`). Previously, searching for a token and clicking it would show the wrong token's details because the filtered array index didn't match the original TOKENS array index. Now uses `TOKENS.find(t => t.symbol === selectedToken)`.
+
+### Root Cause
+- Hydration: `loadingSaved=true` caused SSR to render loading state, but client-side code path rendered WelcomePage — different HTML = hydration failure.
+- Token Detail: `TOKENS[index]` where `index` came from `.filter().map()`, not the original array. Searching "SOL" → index 0 → showed ETH details.
+
+### 构建状态
+- `npm run build` 成功
+- Dev server 运行在 localhost:3000，无 hydration error

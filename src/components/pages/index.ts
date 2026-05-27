@@ -16,3 +16,4 @@ export { MnemonicDisplayPage } from "./mnemonic-display-page";
 export { MnemonicVerifyPage } from "./mnemonic-verify-page";
 export { BuyPage } from "./buy-page";
 export { HelpPage } from "./help-page";
+export { BrandPage } from "./brand-page";

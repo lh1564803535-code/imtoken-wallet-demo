@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreateWallet } from "@/components/create-wallet";
 import { ImportWallet } from "@/components/import-wallet";
 import { SignMessage } from "@/components/sign-message";
 import { WalletSecurity } from "@/components/wallet-security";
 import { AIIntent } from "@/components/ai-intent";
 import { ShopTab } from "@/components/bitrefill/ShopTab";
-import { Wallet, Shield, Gift, Clock, Users, Plus, Home, Compass, User, Send, QrCode, ArrowLeftRight, Sparkles, ChevronRight, Eye, EyeOff, ArrowLeft, Activity, TrendingUp, Globe, CreditCard, X, Trophy, Palette } from "lucide-react";
+import { Wallet, Shield, Gift, Clock, Users, Home, Compass, User, Send, QrCode, ArrowLeftRight, Sparkles, ChevronRight, Eye, EyeOff, ArrowLeft, Activity, TrendingUp, Globe, CreditCard, X, Trophy, Palette } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { CommandPalette, useCommandPalette } from "@/components/command-palette";
 import { Onboarding, useOnboarding } from "@/components/onboarding";
 import { BackupReminder, useBackupReminder } from "@/components/backup-reminder";
 import { AIAgentBanner } from "@/components/ai-agent";
 import { AchievementsPage } from "@/components/achievements";
-import { ThemeProvider, ThemePickerPage } from "@/components/themes";
+import { ThemePickerPage } from "@/components/themes";
 import { MiniChart } from "@/components/sparkline";
 import { getTokenPrices, getTokenBalance, getTotalBalance, formatPrice, formatChange } from "@/lib/prices";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
@@ -23,7 +23,7 @@ import {
   WelcomePage, SendPage, ReceivePage, SwapPage, ActivityPage,
   HeritagePage, TokenDetailPage, NFTGalleryPage, TxDetailPage,
   SettingsPage, WatchWalletPage, DAppBrowserPage, NetworkSwitchPage,
-  MnemonicDisplayPage, MnemonicVerifyPage, BuyPage, HelpPage,
+  MnemonicDisplayPage, MnemonicVerifyPage, BuyPage, HelpPage, BrandPage,
 } from "@/components/pages";
 import type { TokenItem } from "@/components/pages";
 
@@ -51,7 +51,7 @@ function MainApp({ wallet, chainAddresses, purchaseIntent, walletName: name }: {
   const [activeTab, setActiveTab] = useState("home");
   const [subPage, setSubPage] = useState<string | null>(null);
   const [showBalance, setShowBalance] = useState(true);
-  const [selectedToken, setSelectedToken] = useState(0);
+  const [selectedToken, setSelectedToken] = useState<string>("ETH");
   const [tokenSearch, setTokenSearch] = useState("");
   const { open: cmdOpen, setOpen: setCmdOpen, commands: cmdCommands } = useCommandPalette((page) => setSubPage(page));
   const { showOnboarding, completeOnboarding } = useOnboarding();
@@ -73,15 +73,39 @@ function MainApp({ wallet, chainAddresses, purchaseIntent, walletName: name }: {
   if (subPage === "heritage") return <HeritagePage onBack={() => setSubPage(null)} ownerAddress={ethAddress} />;
   if (subPage === "create") return <CreateWallet onWalletCreated={() => setSubPage(null)} wallet={wallet} />;
   if (subPage === "import") return <ImportWallet onWalletImported={() => setSubPage(null)} wallet={wallet} />;
-  if (subPage === "sign") return <SignMessage wallet={wallet} />;
-  if (subPage === "security") return <WalletSecurity wallet={wallet} />;
+  if (subPage === "sign") return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="px-5 py-4 flex items-center border-b border-gray-100 shrink-0">
+        <button onClick={() => setSubPage(null)} className="p-2 -ml-2 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
+        <h1 className="flex-1 text-center text-lg font-semibold mr-9">Sign Message</h1>
+      </div>
+      <div className="flex-1 px-5 py-6"><SignMessage wallet={wallet} /></div>
+    </div>
+  );
+  if (subPage === "security") return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="px-5 py-4 flex items-center border-b border-gray-100 shrink-0">
+        <button onClick={() => setSubPage(null)} className="p-2 -ml-2 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
+        <h1 className="flex-1 text-center text-lg font-semibold mr-9">Security</h1>
+      </div>
+      <div className="flex-1 px-5 py-6"><WalletSecurity wallet={wallet} /></div>
+    </div>
+  );
+  if (subPage === "ai") return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="px-5 py-4 flex items-center border-b border-gray-100 shrink-0">
+        <button onClick={() => setSubPage(null)} className="p-2 -ml-2 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
+        <h1 className="flex-1 text-center text-lg font-semibold mr-9">AI Assistant</h1>
+      </div>
+      <div className="flex-1 px-5 py-4"><AIIntent wallet={wallet} onNavigate={setSubPage} onAction={() => {}} /></div>
+    </div>
+  );
   if (subPage === "shop") return <ShopTab wallet={wallet} addresses={chainAddresses} onNavigate={setSubPage} purchaseIntent={purchaseIntent} />;
-  if (subPage === "ai") return <AIIntent wallet={wallet} onNavigate={setSubPage} onAction={() => {}} />;
   if (subPage === "send") return <SendPage onBack={() => setSubPage(null)} wallet={wallet} />;
   if (subPage === "receive") return <ReceivePage onBack={() => setSubPage(null)} address={ethAddress} />;
   if (subPage === "swap") return <SwapPage onBack={() => setSubPage(null)} />;
   if (subPage === "activity") return <ActivityPage onBack={() => setSubPage(null)} />;
-  if (subPage === "token") return <TokenDetailPage onBack={() => setSubPage(null)} token={TOKENS[selectedToken]} />;
+  if (subPage === "token") return <TokenDetailPage onBack={() => setSubPage(null)} token={TOKENS.find(t => t.symbol === selectedToken) || TOKENS[0]} />;
   if (subPage === "nfts") return <NFTGalleryPage onBack={() => setSubPage(null)} />;
   if (subPage === "network") return <NetworkSwitchPage onBack={() => setSubPage(null)} />;
   if (subPage === "txDetail") return <TxDetailPage onBack={() => setSubPage(null)} />;
@@ -92,6 +116,7 @@ function MainApp({ wallet, chainAddresses, purchaseIntent, walletName: name }: {
   if (subPage === "help") return <HelpPage onBack={() => setSubPage(null)} />;
   if (subPage === "achievements") return <AchievementsPage onBack={() => setSubPage(null)} />;
   if (subPage === "themes") return <ThemePickerPage onBack={() => setSubPage(null)} />;
+  if (subPage === "brand") return <BrandPage onBack={() => setSubPage(null)} />;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -194,7 +219,7 @@ function MainApp({ wallet, chainAddresses, purchaseIntent, walletName: name }: {
               {/* Token items */}
               <div className="space-y-0.5">
                 {TOKENS.filter(t => !tokenSearch || t.name.toLowerCase().includes(tokenSearch.toLowerCase()) || t.symbol.toLowerCase().includes(tokenSearch.toLowerCase())).map((token, index) => (
-                  <div key={token.symbol} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50/80 active:bg-gray-100/80 transition-all duration-200 cursor-pointer group animate-token-in" style={{ animationDelay: `${index * 0.05}s` }} onClick={() => { setSelectedToken(index); setSubPage("token"); }}>
+                  <div key={token.symbol} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50/80 active:bg-gray-100/80 transition-all duration-200 cursor-pointer group animate-token-in" style={{ animationDelay: `${index * 0.05}s` }} onClick={() => { setSelectedToken(token.symbol); setSubPage("token"); }}>
                     <div className="relative shrink-0">
                       <div className={`w-12 h-12 ${token.color} rounded-2xl flex items-center justify-center text-white font-bold text-[13px] shadow-md shadow-${token.color.replace('bg-', '')}/20`}>{token.abbr}</div>
                       <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-gray-100 shadow-sm">
@@ -345,6 +370,7 @@ function MainApp({ wallet, chainAddresses, purchaseIntent, walletName: name }: {
                   { icon: Compass, title: "NFT Gallery", desc: "View your collections", page: "nfts" },
                   { icon: Trophy, title: "Achievements", desc: "Your crypto milestones", page: "achievements" },
                   { icon: Palette, title: "Themes", desc: "Customize your wallet look", page: "themes" },
+                  { icon: Sparkles, title: "Brand Guidelines", desc: "Visual identity & brand rules", page: "brand" },
                 ]},
                 { label: "System", items: [
                   { icon: Globe, title: "Network", desc: "Ethereum Mainnet", page: "network" },
@@ -421,11 +447,60 @@ export default function Page() {
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [page, setPage] = useState<"welcome" | "password" | "creating" | "mnemonic" | "verify" | "name" | "import" | "app">("welcome");
   const [chainAddresses, setChainAddresses] = useState<ChainAddress[]>([]);
-  const [purchaseIntent] = useState<PurchaseIntent | null>(null);
+  const purchaseIntent: PurchaseIntent | null = null;
   const [createError, setCreateError] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [walletName, setWalletName] = useState("My Wallet");
+  const [mounted, setMounted] = useState(false);
+
+  // Load wallet from localStorage on mount
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const saved = localStorage.getItem("wallet-data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.keystoreJson && parsed.address && parsed.password) {
+          setWallet(parsed);
+          setWalletName(localStorage.getItem("wallet-name") || "My Wallet");
+          setPage("app");
+          import("@/lib/tcx").then(({ deriveMultiChainAddresses }) => {
+            deriveMultiChainAddresses(parsed.keystoreJson, parsed.password).then(setChainAddresses).catch(() => {});
+          });
+        }
+      }
+    } catch { /* ignore corrupt data */ }
+  }, []);
+
+  // Save wallet to localStorage whenever it changes
+  useEffect(() => {
+    if (wallet) {
+      try {
+        localStorage.setItem("wallet-data", JSON.stringify(wallet));
+        localStorage.setItem("wallet-name", walletName);
+      } catch { /* storage full */ }
+    }
+  }, [wallet, walletName]);
+
+  // Show loading while restoring from localStorage
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white overflow-hidden">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-50 via-blue-50 to-white" />
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="w-24 h-24 rounded-[2rem] identity-gradient flex items-center justify-center shadow-xl animate-pulse">
+              <div className="w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center">
+                <Wallet className="w-10 h-10 text-blue-500" />
+              </div>
+            </div>
+            <p className="text-sm text-gray-400 mt-4">Loading wallet...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSetPassword = async () => {
     if (!password || password.length < 6) { setCreateError("Password must be at least 6 characters"); return; }
@@ -440,8 +515,8 @@ export default function Page() {
       setWallet({ keystoreJson, address, mnemonic, password });
       deriveMultiChainAddresses(keystoreJson, password).then(setChainAddresses).catch(() => {});
       setPage("mnemonic");
-    } catch (e: any) {
-      setCreateError(e.message || "Failed to create wallet");
+    } catch (e: unknown) {
+      setCreateError(e instanceof Error ? e.message : "Failed to create wallet");
       setPage("password");
     }
   };
