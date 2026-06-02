@@ -24,8 +24,8 @@ export function useBitrefill() {
         setError(res.error?.message || "Failed to fetch products");
         setProducts([]);
       }
-    } catch (e: any) {
-      setError(e.message || "Network error");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Network error");
       setProducts([]);
     } finally {
       setLoading(false);

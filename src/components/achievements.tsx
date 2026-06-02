@@ -47,7 +47,6 @@ export function AchievementsPage({ onBack }: { onBack: () => void }) {
   const unlockedCount = achievements.filter(a => a.unlocked).length;
   const totalCount = achievements.length;
   const totalXP = achievements.filter(a => a.unlocked).reduce((sum, a) => sum + (RARITY_COLORS[a.rarity]?.xp || 10), 0);
-  const maxXP = achievements.reduce((sum, a) => sum + (RARITY_COLORS[a.rarity]?.xp || 10), 0);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

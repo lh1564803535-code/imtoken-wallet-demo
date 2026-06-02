@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, MessageCircle, Book, Bug, ExternalLink, ChevronRight } from "lucide-react";
+import { ArrowLeft, MessageCircle, Book, Bug, ChevronRight } from "lucide-react";
 
 const HELP_ITEMS = [
   {

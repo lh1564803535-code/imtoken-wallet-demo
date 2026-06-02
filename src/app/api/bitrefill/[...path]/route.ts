@@ -42,7 +42,7 @@ export async function GET(
         { status: response.status || 502 }
       );
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch from Bitrefill API' }, { status: 502 });
   }
 }
@@ -91,7 +91,7 @@ export async function POST(
         { status: response.status || 502 }
       );
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch from Bitrefill API' }, { status: 502 });
   }
 }

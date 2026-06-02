@@ -40,8 +40,8 @@ export function SignMessage({ wallet }: Props) {
         message
       );
       setSignature(sig);
-    } catch (e: any) {
-      setError(e.message || "Failed to sign");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to sign");
     } finally {
       setLoading(false);
     }
@@ -71,8 +71,8 @@ export function SignMessage({ wallet }: Props) {
         selectedNetwork.chainId
       );
       setTxSignature(sig);
-    } catch (e: any) {
-      setTxError(e.message || "Transaction signing failed");
+    } catch (e: unknown) {
+      setTxError(e instanceof Error ? e.message : "Transaction signing failed");
     } finally {
       setTxLoading(false);
     }

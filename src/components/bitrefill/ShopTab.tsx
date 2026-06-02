@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { ShoppingBag, CreditCard } from "lucide-react";
+import { ShoppingBag, CreditCard, ArrowLeft } from "lucide-react";
 import { GiftCardShop } from "./GiftCardShop";
 import { ProductDetail } from "./ProductDetail";
 import { PaymentConfirm } from "./PaymentConfirm";
@@ -19,6 +19,7 @@ interface Props {
   wallet: WalletData | null;
   addresses: ChainAddress[];
   onNavigate?: (tab: string) => void;
+  onBack?: () => void;
   purchaseIntent?: PurchaseIntent | null;
 }
 
@@ -40,7 +41,7 @@ function saveLastChain(chain: string) {
   }
 }
 
-export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props) {
+export function ShopTab({ wallet, addresses, onNavigate, onBack, purchaseIntent }: Props) {
   const [view, setView] = useState<ShopView>("catalog");
   const [selectedProduct, setSelectedProduct] = useState<BitrefillProduct | null>(null);
   const [invoice, setInvoice] = useState<BitrefillInvoice | null>(null);
@@ -89,8 +90,8 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
         setInvoice(inv);
         setShowPaymentModal(true);
       }
-    } catch (e: any) {
-      setSignError(e.message || "Failed to create invoice");
+    } catch (e: unknown) {
+      setSignError(e instanceof Error ? e.message : "Failed to create invoice");
     }
   };
 
@@ -135,8 +136,8 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
 
       setShowPaymentModal(false);
       setView("result");
-    } catch (e: any) {
-      setSignError(e.message || "Transaction signing failed");
+    } catch (e: unknown) {
+      setSignError(e instanceof Error ? e.message : "Transaction signing failed");
     } finally {
       setSigning(false);
     }
@@ -154,7 +155,16 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
   };
 
   return (
-    <div className="space-y-4">
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="px-5 py-4 flex items-center border-b border-gray-100 shrink-0">
+        {onBack && (
+          <button onClick={onBack} className="p-2 -ml-2 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          </button>
+        )}
+        <h1 className="flex-1 text-center text-lg font-semibold mr-9">Gift Card Shop</h1>
+      </div>
+      <div className="flex-1 px-5 py-4 space-y-4">
       {/* Balance Dashboard */}
       <BalanceDashboard wallet={wallet} addresses={addresses} giftCardTotals={vault.totalByDenomination} />
 
@@ -253,6 +263,7 @@ export function ShopTab({ wallet, addresses, onNavigate, purchaseIntent }: Props
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }

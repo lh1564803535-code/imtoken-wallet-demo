@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { AlertTriangle, Shield, X, Loader2 } from "lucide-react";
+import { AlertTriangle, Shield } from "lucide-react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -50,14 +50,11 @@ interface PasswordConfirmProps {
 export function PasswordConfirmDialog({ open, onClose, onConfirm, title = "Confirm Action" }: PasswordConfirmProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
     if (!password) { setError("Please enter your password"); return; }
-    setLoading(true);
     // Simulate password verification
     await new Promise(r => setTimeout(r, 500));
-    setLoading(false);
     setPassword("");
     setError("");
     onConfirm();

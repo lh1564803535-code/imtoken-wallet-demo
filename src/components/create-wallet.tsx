@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Wallet, Copy, Check, Eye, EyeOff, Loader2,
-  ShieldCheck, Fingerprint, ChevronDown, ChevronRight, ArrowRight, BadgeCheck,
+  ShieldCheck, Fingerprint, ChevronDown, ArrowRight, BadgeCheck,
 } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
@@ -77,8 +77,8 @@ export function CreateWallet({ onWalletCreated, wallet }: Props) {
       const addresses = await deriveMultiChainAddresses(keystoreJson, password);
       setChainAddresses(addresses);
       onWalletCreated({ keystoreJson, address, mnemonic, password });
-    } catch (e: any) {
-      setError(e.message || "Failed to create wallet");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to create wallet");
     } finally {
       setLoading(false);
     }

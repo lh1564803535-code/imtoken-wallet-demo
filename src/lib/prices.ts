@@ -36,8 +36,9 @@ const MOCK_PRICES: Record<string, number> = {
   ARB: 0.42,
 };
 
-// Simulate small price fluctuations
+// Simulate small price fluctuations (client-only to avoid hydration mismatch)
 function jitter(base: number, maxPercent: number): number {
+  if (typeof window === "undefined") return base; // SSR: return deterministic value
   const delta = base * (Math.random() * maxPercent * 2 - maxPercent) / 100;
   return Math.round((base + delta) * 100) / 100;
 }

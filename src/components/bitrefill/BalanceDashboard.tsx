@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Wallet, Gift, TrendingUp, RefreshCw, ExternalLink } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Wallet, Gift, RefreshCw } from "lucide-react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 interface Props {
@@ -29,7 +29,7 @@ export function BalanceDashboard({ wallet, addresses, giftCardTotals }: Props) {
   const [chainBalances, setChainBalances] = useState<ChainBalance[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchBalances = async () => {
+  const fetchBalances = useCallback(async () => {
     if (!wallet?.address || addresses.length === 0) {
       setChainBalances([]);
       return;
@@ -72,11 +72,11 @@ export function BalanceDashboard({ wallet, addresses, giftCardTotals }: Props) {
     }
 
     setRefreshing(false);
-  };
+  }, [wallet?.address, addresses]);
 
   useEffect(() => {
     fetchBalances();
-  }, [wallet?.address, addresses.length]);
+  }, [fetchBalances]);
 
   const hasGiftCards = Object.keys(giftCardTotals).length > 0;
   const totalCrypto = chainBalances.reduce((sum, c) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Send, TrendingDown, ArrowLeftRight, Activity } from "lucide-react";
+import { Send, TrendingDown, ArrowLeftRight, Activity } from "lucide-react";
 
 interface Tx {
   type: "Send" | "Receive" | "Swap";
@@ -35,7 +35,7 @@ const MOCK_GROUPS: TxGroup[] = [
   ]},
 ];
 
-export function ActivityPage({ onBack }: { onBack: () => void }) {
+export function ActivityPage({ onTxClick }: { onBack?: () => void; onTxClick?: () => void }) {
   const [filter, setFilter] = useState("All");
   const filters = ["All", "Sent", "Received", "Swaps"];
 
@@ -72,7 +72,7 @@ export function ActivityPage({ onBack }: { onBack: () => void }) {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{group.label}</p>
             <div className="space-y-1 mb-4">
               {group.txs.map((tx, i) => (
-                <div key={i} className="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer">
+                <div key={i} className="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer" onClick={() => onTxClick?.()}>
                   <div className={`w-11 h-11 ${tx.color} rounded-full flex items-center justify-center shrink-0`}>
                     {tx.type === "Send" ? <Send className={`w-5 h-5 ${tx.iconColor}`} /> :
                      tx.type === "Receive" ? <TrendingDown className={`w-5 h-5 ${tx.iconColor} rotate-180`} /> :

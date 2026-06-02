@@ -42,8 +42,8 @@ export function useGiftCardVault(password: string | undefined): VaultHook {
             new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime()
           ));
         }
-      } catch (e: any) {
-        setError(e.message || "Failed to load gift cards");
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Failed to load gift cards");
       } finally {
         setLoading(false);
       }
@@ -56,8 +56,8 @@ export function useGiftCardVault(password: string | undefined): VaultHook {
       try {
         const encrypted = await encryptCards(updatedCards, password);
         saveToStorage(encrypted);
-      } catch (e: any) {
-        setError(e.message || "Failed to save gift cards");
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "Failed to save gift cards");
       }
     },
     [password]

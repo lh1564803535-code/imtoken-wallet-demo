@@ -245,8 +245,8 @@ export async function verifyOwnershipProof(
     const valid = recovered.toLowerCase() === ethAddress.toLowerCase();
 
     return { valid, recoveredAddress: recovered };
-  } catch (e: any) {
-    return { valid: false, recoveredAddress: e.message || "Verification failed" };
+  } catch (e: unknown) {
+    return { valid: false, recoveredAddress: e instanceof Error ? e.message : "Verification failed" };
   }
 }
 

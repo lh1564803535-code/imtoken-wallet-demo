@@ -10,9 +10,8 @@ export function SendPage({ onBack, wallet }: { onBack: () => void; wallet: Walle
   const [step, setStep] = useState<SendStep>("input");
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
-  const [selectedToken] = useState("ETH");
   const [addressValid, setAddressValid] = useState<boolean | null>(null);
-  const [gasEstimate, setGasEstimate] = useState("0.0012");
+  const [gasEstimate] = useState("0.0012");
   const [txHash, setTxHash] = useState("");
 
   // Validate address on change

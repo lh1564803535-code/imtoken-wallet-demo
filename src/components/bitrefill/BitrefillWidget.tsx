@@ -6,8 +6,8 @@ import { Loader2 } from "lucide-react";
 interface BitrefillWidgetProps {
   paymentMethod?: string;
   theme?: "light" | "dark";
-  onInvoiceCreated?: (data: any) => void;
-  onInvoiceComplete?: (data: any) => void;
+  onInvoiceCreated?: (data: unknown) => void;
+  onInvoiceComplete?: (data: unknown) => void;
 }
 
 export function BitrefillWidget({

@@ -47,8 +47,8 @@ export function ImportWallet({ onWalletImported, wallet }: Props) {
       const addresses = await deriveMultiChainAddresses(keystoreJson, password);
       setChainAddresses(addresses);
       onWalletImported({ keystoreJson, address, mnemonic: mnemonic.trim(), password });
-    } catch (e: any) {
-      setError(e.message || "Failed to import wallet. Please check your mnemonic phrase.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to import wallet. Please check your mnemonic phrase.");
     } finally {
       setLoading(false);
     }

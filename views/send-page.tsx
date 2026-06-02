@@ -4,10 +4,9 @@ import { useState } from "react";
 import { ArrowLeft, QrCode, ChevronRight } from "lucide-react";
 import type { WalletData } from "@/lib/tcx";
 
-export function SendPage({ onBack, wallet }: { onBack: () => void; wallet: WalletData | null }) {
+export function SendPage({ onBack, wallet: _wallet }: { onBack: () => void; wallet: WalletData | null }) {
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
-  const [selectedToken] = useState("ETH");
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

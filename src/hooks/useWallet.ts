@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import type { WalletData, ChainAddress } from "@/lib/tcx";
 
 interface UseWalletReturn {
@@ -42,8 +42,8 @@ export function useWallet(): UseWalletReturn {
       setWallet(w);
       const addresses = await deriveMultiChainAddresses(keystoreJson, password);
       setChainAddresses(addresses);
-    } catch (e: any) {
-      setError(e.message || "Failed to create wallet");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to create wallet");
       throw e;
     } finally {
       setIsLoading(false);
@@ -61,8 +61,8 @@ export function useWallet(): UseWalletReturn {
       setWalletName("Imported Wallet");
       const addresses = await deriveMultiChainAddresses(keystoreJson, password);
       setChainAddresses(addresses);
-    } catch (e: any) {
-      setError(e.message || "Failed to import wallet");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to import wallet");
       throw e;
     } finally {
       setIsLoading(false);

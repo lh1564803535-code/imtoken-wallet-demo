@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Send, QrCode, ArrowLeftRight, Gift, Compass, X, ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
+import { Send, ArrowLeftRight, Gift, Compass, X, ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
 
 interface OnboardingStep {
   icon: React.ReactNode;

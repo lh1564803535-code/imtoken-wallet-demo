@@ -349,7 +349,7 @@ export function HeritagePage({ onBack, ownerAddress }: { onBack: () => void; own
             </div>
           ) : (
             <div className="space-y-3">
-              {vaultState.beneficiaries.map((b, i) => (
+              {vaultState.beneficiaries.map((b) => (
                 <div key={b.address} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md">
