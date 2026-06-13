@@ -1,109 +1,188 @@
-# imToken 10th Anniversary 鈥?AI Crypto Spending Wallet
+# BaiLong AI Wallet — AI Agent 钱包
 
-> One mnemonic, five chains, AI-powered gift card shopping 鈥?with Bitrefill e-commerce integration and local signing.
+> 一句话控制你的加密资产。AI 干活，你只点确认。
 
-馃弮 **Live Demo**: https://imtoken-wallet-demo.vercel.app  
-馃幀 **Video**: Coming soon
-
----
-
-## 馃弳 Hackathon Info
-
-- **Event**: imToken 10th Anniversary AI Co-Creation Hackathon
-- **Track**: Bitrefill Special (Make your wallet an e-commerce assistant)
-- **Awards targeted**: Best AI Wallet + Bitrefill Special Award + Best User Control
-- **Core narrative**: From "holding" to "spending" 鈥?AI intent drives crypto commerce
+**Live Demo**: https://imtoken-wallet-demo.vercel.app
+**Video**: [Demo Video](链接待补)
 
 ---
 
-## 鉁?Key Features
+## 项目概述
 
-### 1. Bitrefill E-Commerce Integration
-- 29 gift card products (Amazon, Steam, Netflix, Uber, Spotify, PlayStation, Xbox...)
-- 11 eSIM products for travel (Japan, Thailand, Korea, Europe, USA, Singapore, Global...)
-- AI-powered product search and recommendations
-- Encrypted gift card vault with PIN protection
+BaiLong AI Wallet 是一个 **AI Agent 钱包**，让用户用自然语言控制链上资产。
 
-### 2. AI Wallet Assistant (E-Commerce Focus)
-- Natural language intent: "Buy $50 Amazon gift card" 鈫?search 鈫?preview 鈫?purchase
-- Travel intent: "I'm going to Japan" 鈫?recommend local eSIM + gift cards
-- Smart fallback: contextual suggestions instead of "I don't understand"
-- Loading animation for better UX
+**核心理念：AI 干活，人类点头。**
 
-### 3. Real Token Core Integration
-Not mock 鈥?real `@consenlabs/tcx-wasm` calls:
-- Create wallet, derive 5-chain addresses (ETH, BTC, TRON, etc.)
-- Sign messages (PersonalSign)
-- Sign transactions with network selection
-- Cross-chain ownership proof with ecrecover verification
-
-### 4. Anti-Blind-Sign Security
-- Payment confirmation with risk warning
-- User must check "I understand this transaction" before signing
-- Full transaction details displayed before confirmation
-- Pure frontend 鈥?no server involved in signing
-
-### 5. Complete Purchase Flow
-Browse Bitrefill catalog 鈫?AI product selection 鈫?sign payment 鈫?get gift card code 鈫?AES-encrypted vault storage 鈫?balance dashboard
+你只需要说一句话（"帮我查余额"、"帮我转 100 USDC 给张三"），AI Agent 帮你完成所有技术细节——查余额、估算 gas、检查地址安全、生成交易——你只需要最后点一下"确认"。
 
 ---
 
-## 馃搨 Tech Stack
+## 核心功能
 
-- **Framework**: Next.js 16 + React 19 + TypeScript
-- **Styling**: Tailwind CSS 4 + shadcn/ui
-- **Wallet**: @consenlabs/tcx-wasm (Token Core)
-- **Crypto**: ethers.js for Sepolia RPC
-- **E-Commerce**: Bitrefill API v2 (mock mode for demo stability)
-- **Security**: Web Crypto API (AES-GCM) for gift card encryption
-- **Deployment**: Vercel (static, zero SSR)
+### 1. AI Agent 对话控制
+
+- 自然语言指令："帮我查余额"、"帮我转账"、"帮我对比 gas 费"
+- AI 自动匹配工具：查余额、提交审批、查交易记录、查审计日志
+- 基于 Vercel AI SDK v6 + MiMo 模型
+
+### 2. Cobo Agentic Wallet 集成
+
+- **Pact 授权机制**：AI 提交操作计划 → 用户审批 → AI 执行
+- **MPC 安全**：私钥切片存储，没人能单独动钱
+- **Policies 约束**：限额、白名单、时间限制
+
+### 3. Bitrefill 电商集成
+
+- 29 款礼品卡（Amazon、Steam、Netflix、Uber、Spotify...）
+- 11 款 eSIM 产品（日本、泰国、韩国、欧洲...）
+- AI 智能推荐："我要去日本" → 推荐当地 eSIM + 礼品卡
+- AES-GCM 加密礼品卡保险箱
+
+### 4. 多链钱包支持
+
+- 基于 `@consenlabs/tcx-wasm`（Token Core）
+- 支持 ETH、BTC、TRON 等 5 条链
+- 本地签名，零服务器参与
+- Base Sepolia 测试网部署
+
+### 5. 安全机制
+
+- **蜜罐检测**：自动识别诈骗代币（honeypot.is API）
+- **地址安全检查**：验证交易历史、合约检测
+- **Gas 自动估算**：实时计算交易成本
+- **反盲签**：交易前显示完整详情，用户必须确认
 
 ---
 
-## 馃摳 Architecture
+## 技术架构
 
 ```
 src/
-app/
-  page.tsx            # Main page (Hero + 5 Tabs + state hub)
-  api/bitrefill/      # Edge Function proxy for Bitrefill API
-components/
-  ai-intent.tsx       # AI Assistant (intent parsing + product search)
-  create-wallet.tsx   # Wallet creation + 5-chain derivation
-  import-wallet.tsx   # Mnemonic import
-  sign-message.tsx    # Message + transaction signing
-  wallet-security.tsx # Keystore security panel
-  bitrefill/
-    ShopTab.tsx       # Shop container (3 views: store/catalog/vault)
-    GiftCardShop.tsx  # Product catalog with filters
-    PaymentConfirm.tsx # Anti-blind-sign payment confirmation
-    PaymentResult.tsx # Success page with confetti
-    GiftCardVault.tsx # Encrypted gift card management
-    BitrefillIntent.ts # Purchase intent regex parser
-lib/
-  tcx.ts              # Token Core WASM wrapper
-  bitrefill-api.ts    # Bitrefill API (mock mode)
-  gift-card-crypto.ts # AES-GCM encryption
-  networks.ts         # Network configuration
+  app/                    # Next.js 16 页面路由
+    page.tsx              # 主页（钱包 + AI 聊天）
+    api/agent/            # AI Agent API 路由
+    api/bitrefill/        # Bitrefill API 代理
+    procurement/          # AI 购物工作台
+    browse/               # 服务市场
+    order/                # 订单管理
+  components/
+    ai-agent.tsx          # AI Agent 聊天界面
+    bailong-chat-panel.tsx # 白龙助手面板
+    create-wallet.tsx     # 钱包创建
+    sign-message.tsx      # 签名确认
+    bitrefill/            # Bitrefill 电商组件
+    pages/                # 钱包子页面（发送/接收/交换等）
+  lib/
+    agent-core.ts         # AI Agent 核心逻辑
+    agent-tools.ts        # Tool Calling 工具定义
+    cobo.ts               # Cobo CAW SDK 集成
+    honeypot.ts           # 蜜罐检测
+    address-checker.ts    # 地址安全检查
+    gas-estimator.ts      # Gas 自动估算
+    tcx.ts                # Token Core WASM 封装
+    bitrefill-api.ts      # Bitrefill API
+    gift-card-crypto.ts   # AES-GCM 加密
 ```
 
 ---
 
-## 鉂?Security Model
+## 技术栈
 
-- 鉁?Keys generated locally via WASM (PBKDF2 脳 600k rounds)
-- 鉁?No server involved in signing
-- 鉁?Zero-trust architecture (all sensitive ops in browser)
-- 鉁?AES-GCM encryption for stored gift card codes
-- 鉁?Anti-blind-sign warning before payment
-- 鉁?Open source and auditable
+| 层级 | 技术 |
+|------|------|
+| **前端框架** | Next.js 16 + React 19 + TypeScript |
+| **样式** | Tailwind CSS 4 + shadcn/ui |
+| **AI 引擎** | Vercel AI SDK v6 + MiMo 模型 |
+| **钱包** | @consenlabs/tcx-wasm + wagmi + RainbowKit |
+| **Web3** | viem + ethers.js（Base Sepolia） |
+| **Agent 基础设施** | Cobo Agentic Wallet SDK |
+| **电商** | Bitrefill API v2 |
+| **加密** | Web Crypto API（AES-GCM） |
+| **部署** | Vercel |
 
 ---
 
-## 馃搫 Deploy
+## 安全模型
+
+- 本地生成密钥（PBKDF2 × 600k rounds）
+- 零服务器参与签名
+- MPC 多方计算保护私钥
+- Pact 授权机制：AI 提议 → 用户审批 → 执行
+- AES-GCM 加密存储敏感数据
+- 蜜罐/地址/合约安全检查
+
+---
+
+## 如何运行
 
 ```bash
-npm run build
-echo y | npx vercel --prod --yes
-git push origin main
+# 1. 克隆项目
+git clone https://github.com/lh1564803535-code/imtoken-wallet-demo.git
+cd imtoken-wallet-demo
+
+# 2. 安装依赖
+npm install
+
+# 3. 配置环境变量
+cp .env.example .env.local
+# 编辑 .env.local 填入你的 API Key
+
+# 4. 启动开发服务器
+npm run dev
+
+# 5. 打开浏览器
+# http://localhost:3000
 ```
+
+### 环境变量说明
+
+| 变量 | 说明 |
+|------|------|
+| `OPENAI_API_KEY` | MiMo API Key |
+| `OPENAI_BASE_URL` | `https://token-plan-cn.xiaomimimo.com/v1` |
+| `OPENAI_MODEL` | `mimo-v2.5` |
+| `NEXT_PUBLIC_AGENT_WALLET_API_KEY` | Cobo CAW API Key |
+| `NEXT_PUBLIC_AGENT_WALLET_WALLET_ID` | Cobo 钱包 ID |
+| `BITREFILL_API_KEY` | Bitrefill API Key |
+| `BITREFILL_API_SECRET` | Bitrefill API Secret |
+
+---
+
+## 链上证据
+
+### 测试网部署信息
+
+| 项目 | 信息 |
+|------|------|
+| **网络** | Base Sepolia Testnet |
+| **Chain ID** | 84532 |
+| **RPC** | https://sepolia.base.org |
+| **USDC 合约** | 0x036CbD53842c5426634e7929541eC2318f3dCF7e |
+| **Escrow 合约** | 0x6EdD143062Ae71D836B7584Ba73A99E8c49DBd8C |
+
+### 测试网浏览器验证
+
+- Base Sepolia Explorer: https://sepolia-explorer.base.org
+- 输入合约地址可查看部署记录和交易历史
+
+---
+
+## 团队
+
+- **数字生命卡兹克** — 产品设计 + 全栈开发
+
+---
+
+## 致谢
+
+- [Cobo Agentic Wallet](https://www.cobo.com/agentic-wallet) — Agent 钱包基础设施
+- [Bitrefill](https://www.bitrefill.com) — 加密货币电商 API
+- [Vercel AI SDK](https://ai-sdk.dev) — AI Agent 开发框架
+- [Token Core](https://github.com/Consenlabs/token-core) — 多链钱包底层
+- [Base](https://base.org) — Coinbase L2 网络
+
+---
+
+## License
+
+MIT
